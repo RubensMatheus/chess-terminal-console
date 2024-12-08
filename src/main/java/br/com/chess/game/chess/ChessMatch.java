@@ -1,8 +1,6 @@
 package br.com.chess.game.chess;
 
-import br.com.chess.game.boardgame.Board;
-import br.com.chess.game.boardgame.Piece;
-import br.com.chess.game.boardgame.Position;
+import br.com.chess.game.boardgame.*;
 import br.com.chess.game.chess.exceptions.ChessException;
 import br.com.chess.game.chess.utils.Color;
 import br.com.chess.game.pieces.*;

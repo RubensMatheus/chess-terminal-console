@@ -1,20 +1,46 @@
 package br.com.chess.game.boardgame;
 
 public abstract class Piece {
+    //@ spec_public
+    //@ nullable
     protected Position position;
+    //@ spec_public
     private Board board;
 
+
+    /*@ public normal_behavior
+      @     ensures this.board == board;
+      @     ensures this.position == null;
+      @ pure
+      @*/
     public Piece(Board board) {
         this.board = board;
         position = null;
     }
 
-    protected Board getBoard() {
+    /*@ public normal_behavior
+      @     ensures \result == this.board;
+      @ pure
+      @*/
+    public Board getBoard() {
         return board;
     }
 
+    /*@ public normal_behavior
+      @     ensures \result != null;
+      @     ensures \result.length == getBoard().getRows();
+      @     ensures (\forall int i; 0 <= i && i < \result.length;
+      @          \result[i] != null && \result[i].length == getBoard().getColumns());
+      @ pure
+      @*/
     public abstract boolean[][] possibleMoves();
 
+    // falta especificar ensures
+    /*@ public normal_behavior
+      @     requires position.getRow() >= 0 && position.getRow() < getBoard().getRows();
+      @     requires position.getColumn() >= 0 && position.getColumn() < getBoard().getColumns();
+      @ pure
+      @*/
     public boolean possibleMove(Position position) {
         return possibleMoves()[position.getRow()][position.getColumn()];
     }
@@ -22,7 +48,7 @@ public abstract class Piece {
     public boolean isThereAnyPossibleMove() {
         boolean[][] mat = possibleMoves();
         for (int i=0; i<mat.length; i++) {
-            for (int j=0; j<mat.length; j++) {
+            for (int j=0; j< mat[i].length; j++) {
                 if (mat[i][j]) {
                     return true;
                 }
