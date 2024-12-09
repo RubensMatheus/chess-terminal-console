@@ -2,9 +2,9 @@ package br.com.chess.game.boardgame;
 import java.util.Arrays;
 
 public abstract class Piece {
+
     //@ spec_public
-    //@ nullable
-    protected Position position;
+    protected /*@ nullable */ Position position;
     //@ spec_public
     private Board board;
 
@@ -19,9 +19,9 @@ public abstract class Piece {
     }
 
     /*@ public normal_behavior
-      @     ensures \result == this.board;
-      @ pure
-      @*/
+          @     ensures \result == this.board;
+          @ pure
+          @*/
     public Board getBoard() {
         return board;
     }
