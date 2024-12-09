@@ -1,4 +1,5 @@
 package br.com.chess.game.boardgame;
+import java.util.Arrays;
 
 public abstract class Piece {
     //@ spec_public
@@ -6,7 +7,6 @@ public abstract class Piece {
     protected Position position;
     //@ spec_public
     private Board board;
-
 
     /*@ public normal_behavior
       @     ensures this.board == board;
@@ -26,19 +26,19 @@ public abstract class Piece {
         return board;
     }
 
-    /*@ public normal_behavior
-      @     ensures \result != null;
-      @     ensures \result.length == getBoard().getRows();
-      @     ensures (\forall int i; 0 <= i && i < \result.length;
-      @          \result[i] != null && \result[i].length == getBoard().getColumns());
+    /*@ ensures \result.length == board.getRows();
+      @ ensures (\forall int i; 0 <= i && i < \result.length;
+      @         \result[i] != null && \result[i].length == board.getColumns());
+      @ ensures (\forall int i, j;
+      @         0 <= i && i < board.getRows() &&
+      @         0 <= j && j < board.getColumns();
+      @         \result[i][j] == true || \result[i][j] == false);
       @ pure
       @*/
     public abstract boolean[][] possibleMoves();
 
-    // falta especificar ensures
-    /*@ public normal_behavior
-      @     requires position.getRow() >= 0 && position.getRow() < getBoard().getRows();
-      @     requires position.getColumn() >= 0 && position.getColumn() < getBoard().getColumns();
+    /*@ requires position.getRow() >= 0 && position.getRow() < board.getRows();
+      @ requires position.getColumn() >= 0 && position.getColumn() < board.getColumns();
       @ pure
       @*/
     public boolean possibleMove(Position position) {

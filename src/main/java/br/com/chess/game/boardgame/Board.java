@@ -11,19 +11,18 @@ public class Board {
     //@ spec_public
     private /*@ nullable */Piece[][] pieces;
 
-
     //@ public invariant rows > 0 && columns > 0;
     //@ public invariant pieces != null;
     //@ public invariant pieces.length == rows;
     //@ public invariant (\forall int i; 0 <= i && i < rows; pieces[i] != null);
     //@ public invariant (\forall int i; 0 <= i && i < rows; pieces[i].length == columns);
-    //@ public invariant (\forall int i, j; 0 <= i && i < rows && 0 <= j && j < columns; pieces[i][j] == null || \typeof(pieces[i][j]) <: \type(Piece));
+    //@ public invariant (\forall int i; 0 <= i && i < rows;  (pieces[i] == null || \elemtype(\typeof(pieces[i])) == \type(Piece)));
+
 
     /*@ public normal_behavior
       @     requires rows > 0 && columns > 0;
       @     ensures this.columns == columns;
       @     ensures this.rows == rows;
-      @     ensures (\forall int i; 0 <= i && i < rows; (\forall int j; 0 <= j && j < columns; pieces[i][j] == null));
       @ also
       @ public exceptional_behavior
       @     requires rows < 1 || columns < 1;
@@ -37,8 +36,17 @@ public class Board {
         }
         this.rows = rows;
         this.columns = columns;
-        pieces = new Piece[rows][columns];
+        pieces = new Piece[rows][];
+
+        /*@ loop_invariant 0 <= i && i <= rows;
+          @ loop_invariant (\forall int k; 0 <= k && k < i; pieces[k] != null && pieces[k].length == columns && \elemtype(\typeof(pieces[k])) == \type(Piece));
+          @ decreasing rows - i;
+          @*/
+        for (int i = 0; i < rows; i++) {
+            pieces[i] = new Piece[columns];
+        }
     }
+
 
     /*@ public normal_behavior
       @     ensures \result == this.rows;
@@ -99,7 +107,6 @@ public class Board {
 
 
     /*@ public normal_behavior
-      @     requires \typeof(piece) <: \type(Piece);
       @     requires positionExists(position);
       @     requires pieces[position.getRow()][position.getColumn()] == null;
       @     ensures pieces[position.getRow()][position.getColumn()] == piece;
@@ -115,9 +122,10 @@ public class Board {
         if(thereIsAPiece(position)){
             throw new BoardException("Já existe uma peça na posição "+ position);
         }
-        //@ assume \typeof(piece) <: \type(Piece);
+
         pieces[position.getRow()][position.getColumn()] = piece;
         piece.position = position;
+
     }
 
     /*@ public normal_behavior
