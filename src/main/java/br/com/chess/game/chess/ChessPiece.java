@@ -62,14 +62,14 @@ public abstract class ChessPiece extends Piece {
 
 
     /*@ public normal_behavior
-      @     requires board.positionExists(position);
-      @     requires board.pieces[position.getRow()][position.getColumn()] == null || !(getBoard().pieces[position.getRow()][position.getColumn()] instanceof ChessPiece);
+      @     requires getBoard().positionExists(position);
+      @     requires getBoard().pieces[position.getRow()][position.getColumn()] == null || !(getBoard().pieces[position.getRow()][position.getColumn()] instanceof ChessPiece);
       @     ensures \result == false;
       @ also
       @ public normal_behavior
-      @     requires board.positionExists(position);
-      @     requires board.pieces[position.getRow()][position.getColumn()] != null && \typeof(getBoard().pieces[position.getRow()][position.getColumn()]) <: \type(ChessPiece);
-      @     ensures \result == (((ChessPiece)board.pieces[position.getRow()][position.getColumn()]).getColor() != getColor());
+      @     requires getBoard().positionExists(position);
+      @     requires getBoard().pieces[position.getRow()][position.getColumn()] != null && \typeof(getBoard().pieces[position.getRow()][position.getColumn()]) <: \type(ChessPiece);
+      @     ensures \result == (((ChessPiece) getBoard().pieces[position.getRow()][position.getColumn()]).getColor() != getColor());
       @ pure
       @*/
     public boolean isThereOpponentPiece(Position position) {
