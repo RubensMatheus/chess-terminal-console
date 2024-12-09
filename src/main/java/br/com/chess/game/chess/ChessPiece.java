@@ -64,7 +64,6 @@ public abstract class ChessPiece extends Piece {
     /*@ public normal_behavior
       @     requires getBoard().positionExists(position);
       @     requires getBoard().pieces[position.getRow()][position.getColumn()] == null;
-      @     requires \typeof(getBoard().pieces[position.getRow()][position.getColumn()]) <: \type(ChessPiece);
       @     ensures \result == false;
       @ also
       @ public normal_behavior
