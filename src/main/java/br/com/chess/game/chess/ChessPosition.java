@@ -21,7 +21,7 @@ public class ChessPosition {
       @ also
       @ public exceptional_behavior
       @     requires column < 'a' || column > 'h' || row < 1 || row > 8;
-      @     signals (ChessException e);
+      @     signals_only RuntimeException;
       @ pure
       @*/
     public ChessPosition(char column, int row) {
@@ -82,7 +82,7 @@ public class ChessPosition {
       @     requires 'a' + position.getColumn() >= 0;
       @     requires position.getColumn() <= Character.MAX_VALUE - 'a';
       @     requires 8 - position.getRow() <= Integer.MAX_VALUE;
-      @     signals (ChessException e);
+      @     signals_only RuntimeException;
       @     assignable \nothing;
       @*/
     public static /*@ nullable*/ ChessPosition fromPosition(/*@ nullable */Position position) {
@@ -94,9 +94,11 @@ public class ChessPosition {
         return new ChessPosition((char) ('a' + position.getColumn()), 8 - position.getRow());
     }
 
-
-    @Override
-    public String toString (){
+    /*@ public normal_behavior
+      @     ensures \result.equals("" + column + row);
+      @ pure
+      @*/
+    public String getString (){
         return "" + column + row;
     }
 

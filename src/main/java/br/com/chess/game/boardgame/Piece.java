@@ -29,10 +29,6 @@ public abstract class Piece {
     /*@ ensures \result.length == board.getRows();
       @ ensures (\forall int i; 0 <= i && i < \result.length;
       @         \result[i] != null && \result[i].length == board.getColumns());
-      @ ensures (\forall int i, j;
-      @         0 <= i && i < board.getRows() &&
-      @         0 <= j && j < board.getColumns();
-      @         \result[i][j] == true || \result[i][j] == false);
       @ pure
       @*/
     public abstract boolean[][] possibleMoves();

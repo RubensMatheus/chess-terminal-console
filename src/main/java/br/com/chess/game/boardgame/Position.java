@@ -53,9 +53,12 @@ public class Position {
         this.column = column;
     }
 
-    // falar com prof
-    @Override
-    public String toString() {
+
+    /*@ public normal_behavior
+      @     ensures \result.equals(this.row + ", " + this.column);
+      @ pure
+      @*/
+    public String getString() {
         return row + ", " + column;
     }
 

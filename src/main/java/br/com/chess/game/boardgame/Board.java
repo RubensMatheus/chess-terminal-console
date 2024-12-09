@@ -26,7 +26,7 @@ public class Board {
       @ also
       @ public exceptional_behavior
       @     requires rows < 1 || columns < 1;
-      @     signals (BoardException e);
+      @     signals_only RuntimeException;
       @ pure
       @*/
     public Board(int rows, int columns) {
@@ -71,7 +71,7 @@ public class Board {
       @ also
       @ public exceptional_behavior
       @     requires !positionExistsBasic(row, column);
-      @     signals (BoardException e);
+      @     signals_only RuntimeException;
       @     assignable \nothing;
       @*/
     public /*@ nullable */ Piece piece(int row, int column) {
@@ -92,7 +92,7 @@ public class Board {
       @ also
       @ public exceptional_behavior
       @     requires !positionExists(position);
-      @     signals (BoardException e);
+      @     signals_only RuntimeException;
       @     assignable \nothing;
       @*/
     public /*@ nullable */ Piece piece(Position position) {
@@ -115,7 +115,7 @@ public class Board {
       @ also
       @ public exceptional_behavior
       @     requires !positionExists(position) || (pieces[position.getRow()][position.getColumn()] != null);
-      @     signals (BoardException e);
+      @     signals_only RuntimeException;
       @     assignable \nothing;
       @*/
     public void placePiece(Piece piece, Position position){
@@ -141,7 +141,7 @@ public class Board {
       @ also
       @ public exceptional_behavior
       @     requires !positionExists(position);
-      @     signals (BoardException e);
+      @     signals_only RuntimeException;
       @     assignable \nothing;
       @*/
     public /*@ nullable */ Piece removePiece (Position position){
@@ -200,7 +200,7 @@ public class Board {
       @ also
       @ public exceptional_behavior
       @     requires !positionExists(position);
-      @     signals (BoardException e);
+      @     signals_only RuntimeException;
       @     assignable \nothing;
       @*/
     public boolean thereIsAPiece(Position position) {
