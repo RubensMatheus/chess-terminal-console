@@ -8,16 +8,16 @@ public class Board {
     private int rows;
     //@ spec_public
     private int columns;
-    //@ spec_public
-    private /*@ nullable */Piece[][] pieces;
 
-    //@ public invariant rows > 0 && columns > 0;
+    //@ spec_public
+    private /*@ nullable */ Piece[][] pieces;
+
     //@ public invariant pieces != null;
+    //@ public invariant rows > 0 && columns > 0;
     //@ public invariant pieces.length == rows;
     //@ public invariant (\forall int i; 0 <= i && i < rows; pieces[i] != null);
     //@ public invariant (\forall int i; 0 <= i && i < rows; pieces[i].length == columns);
-    //@ public invariant (\forall int i; 0 <= i && i < rows;  (pieces[i] == null || \elemtype(\typeof(pieces[i])) == \type(Piece)));
-
+    //@ public invariant (\forall int i; 0 <= i && i < rows;  (\elemtype(\typeof(pieces[i])) == \type(Piece)));
 
     /*@ public normal_behavior
       @     requires rows > 0 && columns > 0;
@@ -40,6 +40,7 @@ public class Board {
 
         /*@ loop_invariant 0 <= i && i <= rows;
           @ loop_invariant (\forall int k; 0 <= k && k < i; pieces[k] != null && pieces[k].length == columns && \elemtype(\typeof(pieces[k])) == \type(Piece));
+          @ loop_invariant (\forall int k; 0 <= k && k < i; (\forall int j; 0 <= j && j < columns; pieces[k][j] == null));
           @ decreasing rows - i;
           @*/
         for (int i = 0; i < rows; i++) {
@@ -118,9 +119,9 @@ public class Board {
       @     signals_only RuntimeException;
       @     assignable \nothing;
       @*/
-    public void placePiece(Piece piece, Position position){
-        if(thereIsAPiece(position)){
-            throw new BoardException("Já existe uma peça na posição "+ position);
+    public void placePiece(Piece piece, Position position) {
+        if (thereIsAPiece(position)) {
+            throw new BoardException("Já existe uma peça na posição " + position);
         }
 
         pieces[position.getRow()][position.getColumn()] = piece;
@@ -144,19 +145,23 @@ public class Board {
       @     signals_only RuntimeException;
       @     assignable \nothing;
       @*/
-    public /*@ nullable */ Piece removePiece (Position position){
-        if(!positionExists(position)){
+    public /*@ nullable */ Piece removePiece(Position position) {
+        if (!positionExists(position)) {
             throw new BoardException("A posição fora do tabuleiro");
         }
+
         if (piece(position) == null) {
             return null;
         }
+
         Piece aux = piece(position);
         aux.position = null;
 
+        //@ assert pieces[position.getRow()][position.getColumn()] != null;
         pieces[position.getRow()][position.getColumn()] = null;
         return aux;
     }
+
 
     /*@ private normal_behavior
       @     requires row >= 0 && row < rows;

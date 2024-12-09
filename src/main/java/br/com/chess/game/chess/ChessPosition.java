@@ -51,7 +51,6 @@ public class ChessPosition {
     /*@ public normal_behavior
       @     requires row >= 1 && row <= 8;
       @     requires column >= 'a' && column <= 'h';
-      @     ensures \result != null;
       @     ensures \result.getRow() == (8 - this.row);
       @     ensures \result.getColumn() == (this.column - 'a');
       @ assignable \nothing;

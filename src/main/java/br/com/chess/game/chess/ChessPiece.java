@@ -16,6 +16,7 @@ public abstract class ChessPiece extends Piece {
     //@ spec_public
     private int moveCount;
 
+
     /*@ public normal_behavior
       @     requires color != null;
       @     ensures this.color == color;
@@ -24,6 +25,7 @@ public abstract class ChessPiece extends Piece {
     public ChessPiece(Board board, Color color) {
         super(board);
         this.color = color;
+        this.moveCount = 0;
     }
 
     /*@ public normal_behavior
