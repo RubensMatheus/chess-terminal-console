@@ -1,6 +1,7 @@
 package br.com.chess.game.boardgame;
 
 import br.com.chess.game.boardgame.exceptions.BoardException;
+import br.com.chess.game.chess.ChessPiece;
 
 public class Board {
 
@@ -124,7 +125,6 @@ public class Board {
         }
 
         pieces[position.getRow()][position.getColumn()] = piece;
-        //@ assert piece.modelPosition == piece.position;
         piece.position = position;
 
     }
@@ -179,12 +179,14 @@ public class Board {
     }
 
     /*@ public normal_behavior
-      @     requires position != null;
       @     ensures \result == (position.getRow() >= 0 && position.getRow() < this.rows
       @                    && position.getColumn() >= 0 && position.getColumn() < this.columns);
       @ pure
       @*/
     public boolean positionExists(Position position) {
+        if(position == null) {
+            return false;
+        }
         int row = position.getRow();
         int column = position.getColumn();
         return positionExistsBasic(row, column);

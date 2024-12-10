@@ -89,7 +89,6 @@ public class ChessPosition {
             return null;
         }
 
-        //@ assert position != null;
         return new ChessPosition((char) ('a' + position.getColumn()), 8 - position.getRow());
     }
 

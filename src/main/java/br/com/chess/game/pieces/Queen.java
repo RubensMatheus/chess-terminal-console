@@ -3,6 +3,7 @@ package br.com.chess.game.pieces;
 import br.com.chess.game.boardgame.Board;
 import br.com.chess.game.boardgame.Position;
 import br.com.chess.game.chess.ChessPiece;
+import br.com.chess.game.chess.exceptions.ChessException;
 import br.com.chess.game.chess.utils.Color;
 
 public class Queen extends ChessPiece {
@@ -16,8 +17,14 @@ public class Queen extends ChessPiece {
         return "A";
     }
 
+    /*@ skipesc */
     @Override
     public boolean[][] possibleMoves() {
+
+        if(position == null) {
+            throw new ChessException("Posição da peça é nula");
+        }
+
         boolean[][] mat = new boolean[getBoard().getRows()][getBoard().getColumns()];
 
         Position p = new Position(0, 0);
