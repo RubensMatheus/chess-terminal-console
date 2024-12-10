@@ -10,16 +10,18 @@ import br.com.chess.game.chess.utils.Color;
 
 public abstract class ChessPiece extends Piece {
 
-    //@ spec_public
-    private final Color color;
+    private final Color color; //@ in modelColor;
+    private int moveCount; //@ in modelCount;
 
-    //@ spec_public
-    private int moveCount;
+    //@ public model Color modelColor;
+    //@ private represents modelColor = this.color;
 
+    //@ public model int modelCount;
+    //@ private represents modelCount = this.moveCount;
 
     /*@ public normal_behavior
       @     requires color != null;
-      @     ensures this.color == color;
+      @     ensures modelColor == color;
       @ pure
       @*/
     public ChessPiece(Board board, Color color) {
@@ -29,7 +31,7 @@ public abstract class ChessPiece extends Piece {
     }
 
     /*@ public normal_behavior
-      @     ensures \result == color;
+      @     ensures \result == modelColor;
       @ pure
       @*/
     public Color getColor() {
@@ -37,7 +39,7 @@ public abstract class ChessPiece extends Piece {
     }
 
     /*@ public normal_behavior
-      @     ensures \result == moveCount;
+      @     ensures \result == modelCount;
       @ pure
       @*/
     public int getMoveCount() {
@@ -45,18 +47,18 @@ public abstract class ChessPiece extends Piece {
     }
 
     /*@ public normal_behavior
-      @     requires moveCount < Integer.MAX_VALUE;
-      @     ensures moveCount == \old(moveCount) + 1;
-      @ assigns moveCount;
+      @     requires modelCount < Integer.MAX_VALUE;
+      @     ensures modelCount == \old(modelCount) + 1;
+      @ assigns modelCount;
       @*/
     public void increaseMoveCount(){
         moveCount++;
     }
 
     /*@ public normal_behavior
-      @     requires moveCount > Integer.MIN_VALUE;
-      @     ensures moveCount == \old(moveCount) - 1;
-      @ assigns moveCount;
+      @     requires modelCount > Integer.MIN_VALUE;
+      @     ensures modelCount == \old(modelCount) - 1;
+      @ assigns modelCount;
       @*/
     public void decreaseMoveCount(){
         moveCount--;
@@ -86,27 +88,27 @@ public abstract class ChessPiece extends Piece {
     }
 
     /*@ public normal_behavior
-      @     requires position != null;
-      @     requires position.getRow() >= 0 && position.getRow() <= 7;
-      @     requires position.getColumn() >= 0 && position.getColumn() <= 7;
-      @     requires position.getColumn() <= Character.MAX_VALUE - 'a';
-      @     requires 8 - position.getRow() <= Integer.MAX_VALUE;
+      @     requires modelPosition != null;
+      @     requires modelPosition.getRow() >= 0 && modelPosition.getRow() <= 7;
+      @     requires modelPosition.getColumn() >= 0 && modelPosition.getColumn() <= 7;
+      @     requires modelPosition.getColumn() <= Character.MAX_VALUE - 'a';
+      @     requires 8 - modelPosition.getRow() <= Integer.MAX_VALUE;
       @     ensures \result != null;
-      @     ensures \result.getRow() == 8 - position.getRow();
-      @     ensures \result.getColumn() == (char) ('a' + position.getColumn());
+      @     ensures \result.getRow() == 8 - modelPosition.getRow();
+      @     ensures \result.getColumn() == (char) ('a' + modelPosition.getColumn());
       @     assignable \nothing;
       @ also
       @ public normal_behavior
-      @     requires position == null;
+      @     requires modelPosition == null;
       @     ensures \result == null;
       @     assignable \nothing;
       @ also
       @ public exceptional_behavior
-      @     requires position != null;
-      @     requires position.getRow() < 0 || position.getRow() > 7 || position.getColumn() < 0 || position.getColumn() > 7;
-      @     requires position.getColumn() <= Character.MAX_VALUE - 'a';
-      @     requires 'a' + position.getColumn() >= 0;
-      @     requires 8 - position.getRow() <= Integer.MAX_VALUE;
+      @     requires modelPosition != null;
+      @     requires modelPosition.getRow() < 0 || modelPosition.getRow() > 7 || modelPosition.getColumn() < 0 || modelPosition.getColumn() > 7;
+      @     requires modelPosition.getColumn() <= Character.MAX_VALUE - 'a';
+      @     requires 'a' + modelPosition.getColumn() >= 0;
+      @     requires 8 - modelPosition.getRow() <= Integer.MAX_VALUE;
       @     signals_only RuntimeException;
       @     assignable \nothing;
       @*/

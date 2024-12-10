@@ -3,14 +3,19 @@ import java.util.Arrays;
 
 public abstract class Piece {
 
-    //@ spec_public
-    protected /*@ nullable */ Position position;
-    //@ spec_public
-    private Board board;
+    protected /*@ nullable */ Position position; //@ in modelPosition;
+    private Board board; //@ in modelBoard;
+
+
+    //@ public model /*@ nullable */ Position modelPosition;
+    //@ private represents modelPosition = this.position;
+
+    //@ public model Board modelBoard;
+    //@ private represents modelBoard = this.board;
 
     /*@ public normal_behavior
-      @     ensures this.board == board;
-      @     ensures this.position == null;
+      @     ensures modelBoard == board;
+      @     ensures modelPosition == null;
       @ pure
       @*/
     public Piece(Board board) {
@@ -19,22 +24,31 @@ public abstract class Piece {
     }
 
     /*@ public normal_behavior
-          @     ensures \result == this.board;
-          @ pure
-          @*/
+      @     ensures \result == modelBoard;
+      @ pure
+      @*/
     public Board getBoard() {
         return board;
     }
 
-    /*@ ensures \result.length == board.getRows();
+    /*@ public normal_behavior
+      @     ensures \result == modelPosition;
+      @ pure
+      @*/
+    public /*@ nullable */ Position getPosition() {
+        return position;
+    }
+
+
+    /*@ ensures \result.length == modelBoard.getRows();
       @ ensures (\forall int i; 0 <= i && i < \result.length;
-      @         \result[i] != null && \result[i].length == board.getColumns());
+      @         \result[i] != null && \result[i].length == modelBoard.getColumns());
       @ pure
       @*/
     public abstract boolean[][] possibleMoves();
 
-    /*@ requires position.getRow() >= 0 && position.getRow() < board.getRows();
-      @ requires position.getColumn() >= 0 && position.getColumn() < board.getColumns();
+    /*@ requires position.getRow() >= 0 && position.getRow() < modelBoard.getRows();
+      @ requires position.getColumn() >= 0 && position.getColumn() < modelBoard.getColumns();
       @ pure
       @*/
     public boolean possibleMove(Position position) {
