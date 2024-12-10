@@ -33,20 +33,26 @@ public class Position {
         return column;
     }
 
-    /*@ ensures this.row == row;
+    /*@ public normal_behavior
+      @     ensures this.row == row;
+      @     assignable this.row;
       @*/
     public void setRow(int row) {
         this.row = row;
     }
 
-    /*@ ensures this.column == column;
+    /*@ public normal_behavior
+      @     ensures this.column == column;
+      @     assignable this.column;
       @*/
     public void setColumn(int column) {
         this.column = column;
     }
 
-    /*@ ensures this.row == row;
-      @ ensures this.column == column;
+    /*@ public normal_behavior
+      @     ensures this.row == row;
+      @     ensures this.column == column;
+      @     assignable this.column, this.row;
       @*/
     public void setValues(int row, int column) {
         this.row = row;

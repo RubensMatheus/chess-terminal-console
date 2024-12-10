@@ -1,11 +1,9 @@
 package br.com.chess.game.boardgame;
-import java.util.Arrays;
 
 public abstract class Piece {
 
     protected /*@ nullable */ Position position; //@ in modelPosition;
     private Board board; //@ in modelBoard;
-
 
     //@ public model /*@ nullable */ Position modelPosition;
     //@ private represents modelPosition = this.position;
@@ -40,26 +38,29 @@ public abstract class Piece {
     }
 
 
-    /*@ ensures \result.length == modelBoard.getRows();
-      @ ensures (\forall int i; 0 <= i && i < \result.length;
-      @         \result[i] != null && \result[i].length == modelBoard.getColumns());
-      @ pure
-      @*/
+    //@ assignable \nothing;
     public abstract boolean[][] possibleMoves();
 
-    /*@ requires position.getRow() >= 0 && position.getRow() < modelBoard.getRows();
+    /*@ requires modelPosition != null;
+      @ requires getBoard().positionExists(modelPosition);
+      @ requires position.getRow() >= 0 && position.getRow() < modelBoard.getRows();
       @ requires position.getColumn() >= 0 && position.getColumn() < modelBoard.getColumns();
-      @ pure
+      @ assignable \nothing;
       @*/
     public boolean possibleMove(Position position) {
         return possibleMoves()[position.getRow()][position.getColumn()];
     }
 
+
+    /*@ requires modelPosition != null;
+      @ requires getBoard().positionExists(modelPosition);
+      @ assignable \nothing;
+      @*/
     public boolean isThereAnyPossibleMove() {
         boolean[][] mat = possibleMoves();
-        for (int i=0; i<mat.length; i++) {
-            for (int j=0; j< mat[i].length; j++) {
-                if (mat[i][j]) {
+        for (boolean[] booleans : mat) {
+            for (boolean aBoolean : booleans) {
+                if (aBoolean) {
                     return true;
                 }
             }

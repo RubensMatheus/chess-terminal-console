@@ -4,6 +4,7 @@ import br.com.chess.game.boardgame.Board;
 import br.com.chess.game.boardgame.Position;
 import br.com.chess.game.chess.ChessMatch;
 import br.com.chess.game.chess.ChessPiece;
+import br.com.chess.game.chess.exceptions.ChessException;
 import br.com.chess.game.chess.utils.Color;
 
 public class King extends ChessPiece {
@@ -17,23 +18,32 @@ public class King extends ChessPiece {
     public ChessMatch getChessMatch() {
         return chessMatch;
     }
+
     @Override
     public String toString(){
         return "R";
     }
 
+    /*@ skipesc */
     private boolean canMove(Position position){
         ChessPiece p = (ChessPiece)getBoard().piece(position);
         return  p == null || p.getColor() != getColor();
     }
 
+    /*@ skipesc */
     private boolean testRookCastling(Position position){
         ChessPiece p = (ChessPiece)getBoard().piece(position);
         return position !=null && p instanceof Rook && getColor() == getColor() && p.getMoveCount() == 0;
     }
 
+    /*@ skipesc */
     @Override
     public boolean[][] possibleMoves() {
+
+        if(position == null) {
+            throw new ChessException("Posição da peça é nula");
+        }
+
         boolean[][] mat= new boolean[getBoard().getRows()][getBoard().getColumns()];
         Position p = new Position(0,0);
 

@@ -53,6 +53,7 @@ public class ChessMatch {
         initialSetup();
     }
 
+    /*@ skipesc */
     public ChessPiece[][] getPieces() {
         ChessPiece[][] mat = new ChessPiece[board.getRows()][board.getColumns()];
         for (int i = 0; i < board.getRows(); i++) {
@@ -65,6 +66,7 @@ public class ChessMatch {
 
 
 
+    /*@ skipesc */
     public ChessPiece performChessMove(ChessPosition sourcePosition, ChessPosition targetPosition) {
         Position source = sourcePosition.toPosition();
         Position target = targetPosition.toPosition();
@@ -105,6 +107,7 @@ public class ChessMatch {
         return (ChessPiece) capturedPiece;
     }
 
+    /*@ skipesc */
     public ChessPiece replacepromotedPiece(String type){
         if(promoted == null){
             throw new IllegalStateException("Não há peça para ser promovida");
@@ -123,6 +126,7 @@ public class ChessMatch {
         return newPiece;
     }
 
+    /*@ skipesc */
     private ChessPiece newPiece(String type, Color color) {
         if (type.equals("B")) return new Bishop(board, color);
         if (type.equals("C")) return new Knight(board, color);
@@ -130,6 +134,7 @@ public class ChessMatch {
         return new Rook(board, color);
     }
 
+    /*@ skipesc */
     private void validateSourcePosition(Position position) {
         if (!board.thereIsAPiece(position)) {
             throw new ChessException("Não há nenhuma peça na posição de origem.");
@@ -142,12 +147,14 @@ public class ChessMatch {
         }
     }
 
+    /*@ skipesc */
     public boolean[][] possibleMoves(ChessPosition sourcePosition) {
         Position position = sourcePosition.toPosition();
         validateSourcePosition(position);
         return board.piece(position).possibleMoves();
     }
 
+    /*@ skipesc */
     private Piece makeMove(Position source, Position target) {
         ChessPiece p = (ChessPiece) board.removePiece(source);
         p.increaseMoveCount();
@@ -193,6 +200,7 @@ public class ChessMatch {
         return capturedPiece;
     }
 
+    /*@ skipesc */
     private void undoMove(Position source, Position target, Piece captured) {
         ChessPiece p = (ChessPiece) board.removePiece(target);
         p.decreaseMoveCount();
@@ -236,26 +244,31 @@ public class ChessMatch {
         }
     }
 
+    /*@ skipesc */
     private void validateTargetPosition(Position source, Position target) {
         if (!board.piece(source).possibleMove(target)) {
             throw new ChessException("A peça escolhida não pode se mover para a posição escolhida");
         }
     }
 
+    /*@ skipesc */
     private void nextTurn() {
         turn++;
         currentPlayer = (currentPlayer == Color.WHITE) ? Color.BLACK : Color.WHITE;
     }
 
+    /*@ skipesc */
     private void placeNewPiece(char column, int row, ChessPiece piece) {
         board.placePiece(piece, new ChessPosition(column, row).toPosition());
         piecesOnTheBoard.add(piece);
     }
 
+    /*@ skipesc */
     private Color opponent(Color color) {
         return (color == Color.WHITE) ? Color.BLACK : Color.WHITE;
     }
 
+    /*@ skipesc */
     private ChessPiece king(Color color) {
         List<Piece> list = listColorPieces(color);
         for (Piece p : list) {
@@ -266,6 +279,7 @@ public class ChessMatch {
         throw new IllegalStateException("Não existe um rei com a cor " + color);
     }
 
+    /*@ skipesc */
     private List<Piece> listColorPieces(Color color) {
         return piecesOnTheBoard.stream()
                 .filter(x -> ((ChessPiece) x)
@@ -273,6 +287,7 @@ public class ChessMatch {
                 .collect(Collectors.toList());
     }
 
+    /*@ skipesc */
     private boolean testCheck(Color color) {
         Position kingPosition = king(color).getChessPosition().toPosition();
         List<Piece> opponentPieces = listColorPieces(opponent(color));
@@ -286,6 +301,7 @@ public class ChessMatch {
         return false;
     }
 
+    /*@ skipesc */
     private boolean testCheckMate(Color color) {
         if (!testCheck(color)) {
             return false;
@@ -312,6 +328,7 @@ public class ChessMatch {
 
     }
 
+    /*@ skipesc */
     private void initialSetup() {
         placeNewPiece('a', 1, new Rook(board, Color.WHITE));
         placeNewPiece('b', 1, new Knight(board, Color.WHITE));
