@@ -8,7 +8,6 @@ public class Board {
     private int rows;
     //@ spec_public
     private int columns;
-
     //@ spec_public
     private /*@ nullable */ Piece[][] pieces;
 
@@ -111,8 +110,8 @@ public class Board {
       @     requires positionExists(position);
       @     requires pieces[position.getRow()][position.getColumn()] == null;
       @     ensures pieces[position.getRow()][position.getColumn()] == piece;
-      @     ensures piece.position == position;
-      @     assignable pieces[position.getRow()][position.getColumn()], piece.position;
+      @     ensures piece.modelPosition == position;
+      @     assignable pieces[position.getRow()][position.getColumn()], piece.modelPosition;
       @ also
       @ public exceptional_behavior
       @     requires !positionExists(position) || (pieces[position.getRow()][position.getColumn()] != null);
@@ -125,6 +124,7 @@ public class Board {
         }
 
         pieces[position.getRow()][position.getColumn()] = piece;
+        //@ assert piece.modelPosition == piece.position;
         piece.position = position;
 
     }
@@ -133,7 +133,7 @@ public class Board {
       @     requires positionExists(position) && pieces[position.getRow()][position.getColumn()] != null;
       @     ensures \result == (\old(pieces[position.getRow()][position.getColumn()]));
       @     ensures pieces[position.getRow()][position.getColumn()] == null;
-      @     assignable pieces[position.getRow()][position.getColumn()], pieces[position.getRow()][position.getColumn()].position;
+      @     assignable pieces[position.getRow()][position.getColumn()], pieces[position.getRow()][position.getColumn()].modelPosition;
       @ also
       @ public normal_behavior
       @     requires positionExists(position) && pieces[position.getRow()][position.getColumn()] == null;
