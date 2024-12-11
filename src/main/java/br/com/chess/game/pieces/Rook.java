@@ -6,38 +6,47 @@ import br.com.chess.game.chess.ChessPiece;
 import br.com.chess.game.chess.exceptions.ChessException;
 import br.com.chess.game.chess.utils.Color;
 
-
+/*@ skipesc */
 public class Rook extends ChessPiece {
 
+    //@ public represents maxMove = 8;
 
     public Rook(Board board, Color color) {
         super(board, color);
     }
 
-    @Override
-    public String toString(){
+    /*@ public normal_behavior
+      @     ensures \result.equals("T");
+      @ pure
+      @*/
+    public String getString(){
         return "T";
     }
 
 
-    /*@ skipesc */
+    //  to fazendooooo
     @Override
     public boolean[][] possibleMoves() {
-
-        if(position == null) {
-            throw new ChessException("Posição da peça é nula");
-        }
-
         boolean[][] mat = new boolean[getBoard().getRows()][getBoard().getColumns()];
-
         Position p = new Position(0, 0);
 
         // above
         p.setValues(position.getRow() - 1, position.getColumn());
-        while (getBoard().positionExists(p) && !getBoard().thereIsAPiece(p)) {
-            mat[p.getRow()][p.getColumn()] = true;
+
+        /*@ maintaining getBoard().positionExists(p) ==>
+          @     (p.getRow() >= 0 && p.getRow() < getBoard().getRows());
+          @ maintaining (\forall int r; p.getRow() <= r && r < position.getRow();
+          @     mat[r][position.getColumn()] == (getBoard().pieces[r][position.getColumn()] == null));
+          @ decreasing p.getRow();
+          @*/
+        while (getBoard().positionExists(p)) {
+            mat[p.getRow()][p.getColumn()] = !getBoard().thereIsAPiece(p);
             p.setRow(p.getRow() - 1);
         }
+
+        /*@ refining ensures getBoard().positionExists(p) && isThereOpponentPiece(p) ==>
+          @     mat[p.getRow()][p.getColumn()] == true;
+          @*/
         if (getBoard().positionExists(p) && isThereOpponentPiece(p)) {
             mat[p.getRow()][p.getColumn()] = true;
         }
@@ -74,5 +83,7 @@ public class Rook extends ChessPiece {
 
         return mat;
     }
+
+
 }
 

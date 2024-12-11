@@ -7,20 +7,36 @@ import br.com.chess.game.chess.ChessPiece;
 import br.com.chess.game.chess.exceptions.ChessException;
 import br.com.chess.game.chess.utils.Color;
 
+/*@ skipesc */
 public class King extends ChessPiece {
 
-    private ChessMatch chessMatch;
+    private ChessMatch chessMatch; //@ in modelMatch;
 
+    //@ public model chessMatch modelMatch;
+    //@ private represents modelMatch = this.chessMatch;
+
+    /*@ public normal_behavior
+      @     ensures modelMatch == chessMatch;
+      @ pure
+      @*/
     public King(Board board, Color color, ChessMatch chessMatch) {
         super(board, color);
         this.chessMatch = chessMatch;
     }
+
+    /*@ public normal_behavior
+      @     ensures \result == modelMatch;
+      @ pure
+      @*/
     public ChessMatch getChessMatch() {
         return chessMatch;
     }
 
-    @Override
-    public String toString(){
+    /*@ public normal_behavior
+      @     ensures \result.equals("R");
+      @ pure
+      @*/
+    public String getString(){
         return "R";
     }
 
@@ -36,13 +52,8 @@ public class King extends ChessPiece {
         return position !=null && p instanceof Rook && getColor() == getColor() && p.getMoveCount() == 0;
     }
 
-    /*@ skipesc */
     @Override
     public boolean[][] possibleMoves() {
-
-        if(position == null) {
-            throw new ChessException("Posição da peça é nula");
-        }
 
         boolean[][] mat= new boolean[getBoard().getRows()][getBoard().getColumns()];
         Position p = new Position(0,0);
@@ -118,6 +129,10 @@ public class King extends ChessPiece {
             }
 
         }
+
+        //@ assert mat.length == modelBoard.getRows();
+        //@ assert (\forall int i; 0 <= i && i < mat.length;
+        //@         mat[i] != null && mat[i].length == modelBoard.getColumns());
         return mat;
     }
 

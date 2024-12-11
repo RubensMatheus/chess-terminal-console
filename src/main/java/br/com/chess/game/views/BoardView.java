@@ -9,7 +9,7 @@ import br.com.chess.game.views.utils.BoardColors;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
+/*@ skipesc */
 public class BoardView {
 
     public static void clearScreen(){

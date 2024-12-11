@@ -6,18 +6,14 @@ import br.com.chess.game.chess.ChessPiece;
 import br.com.chess.game.chess.exceptions.ChessException;
 import br.com.chess.game.chess.utils.Color;
 
+/*@ skipesc */
 public class Bishop extends ChessPiece {
     public Bishop(Board board, Color color) {
         super(board, color);
     }
 
-    /*@ skipesc */
     @Override
     public boolean[][] possibleMoves() {
-
-        if(position == null) {
-            throw new ChessException("Posição da peça é nula");
-        }
 
         boolean[][] mat = new boolean[getBoard().getRows()][getBoard().getColumns()];
 
@@ -63,11 +59,18 @@ public class Bishop extends ChessPiece {
             mat[p.getRow()][p.getColumn()] = true;
         }
 
+        //@ assert mat.length == modelBoard.getRows();
+        //@ assert (\forall int i; 0 <= i && i < mat.length;
+        //@         mat[i] != null && mat[i].length == modelBoard.getColumns());
+
         return mat;
     }
 
-    @Override
-    public String toString(){
+    /*@ public normal_behavior
+      @     ensures \result.equals("B");
+      @ pure
+      @*/
+    public String getString(){
         return "B";
     }
 }
