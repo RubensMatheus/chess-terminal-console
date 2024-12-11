@@ -89,7 +89,7 @@ public class Knight extends ChessPiece {
         //@             getBoard().positionExistsBasic(i, j) &&
         //@             (getBoard().pieces[i][j] == null ||
         //@             (getBoard().pieces[i][j] instanceof ChessPiece &&
-        //@               ((ChessPiece) getBoard().pieces[i][j]).getColor() != this.getColor()))));
+        //@               (getBoard().pieces[i][j]).getColor() != this.getColor()))));
 
         return mat;
     }
