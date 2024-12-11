@@ -50,6 +50,14 @@ public class Board {
 
 
     /*@ public normal_behavior
+      @     ensures \result == this.pieces;
+      @ pure
+      @*/
+    public Piece[][] getPieces() {
+        return pieces;
+    }
+
+    /*@ public normal_behavior
       @     ensures \result == this.rows;
       @ pure
       @*/
@@ -184,9 +192,6 @@ public class Board {
       @ pure
       @*/
     public boolean positionExists(Position position) {
-        if(position == null) {
-            return false;
-        }
         int row = position.getRow();
         int column = position.getColumn();
         return positionExistsBasic(row, column);

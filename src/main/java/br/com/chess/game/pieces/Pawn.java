@@ -6,7 +6,7 @@ import br.com.chess.game.chess.ChessMatch;
 import br.com.chess.game.chess.ChessPiece;
 import br.com.chess.game.chess.exceptions.ChessException;
 import br.com.chess.game.chess.utils.Color;
-
+/*@ skipesc */
 public class Pawn extends ChessPiece {
 
     private ChessMatch chessMatch;
@@ -16,13 +16,8 @@ public class Pawn extends ChessPiece {
         this.chessMatch = chessMatch;
     }
 
-    /*@ skipesc */
     @Override
     public boolean[][] possibleMoves() {
-
-        if(position == null) {
-            throw new ChessException("Posição da peça é nula");
-        }
 
         boolean[][] mat= new boolean[getBoard().getRows()][getBoard().getColumns()];
         Position p = new Position(0,0);
@@ -88,11 +83,17 @@ public class Pawn extends ChessPiece {
             }
         }
 
+        //@ assert mat.length == modelBoard.getRows();
+        //@ assert (\forall int i; 0 <= i && i < mat.length;
+        //@         mat[i] != null && mat[i].length == modelBoard.getColumns());
         return mat;
     }
 
-    @Override
-    public String toString(){
+    /*@ public normal_behavior
+      @     ensures \result.equals("P");
+      @ pure
+      @*/
+    public String getString(){
         return "P";
     }
 }

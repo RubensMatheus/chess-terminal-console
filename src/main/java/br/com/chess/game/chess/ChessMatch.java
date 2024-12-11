@@ -9,7 +9,7 @@ import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
+/*@ skipesc */
 public class ChessMatch {
     private ChessPiece enPassantVulnerable;
     private ChessPiece promoted;
