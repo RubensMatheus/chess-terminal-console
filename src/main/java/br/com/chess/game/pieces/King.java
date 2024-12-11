@@ -1,10 +1,9 @@
 package br.com.chess.game.pieces;
 
 import br.com.chess.game.boardgame.Board;
+import br.com.chess.game.boardgame.ChessPiece;
 import br.com.chess.game.boardgame.Position;
 import br.com.chess.game.chess.ChessMatch;
-import br.com.chess.game.chess.ChessPiece;
-import br.com.chess.game.chess.exceptions.ChessException;
 import br.com.chess.game.chess.utils.Color;
 
 /*@ skipesc */
@@ -32,10 +31,12 @@ public class King extends ChessPiece {
         return chessMatch;
     }
 
-    /*@ public normal_behavior
+    /*@ also
+      @ public normal_behavior
       @     ensures \result.equals("R");
       @ pure
       @*/
+    @Override
     public String getString(){
         return "R";
     }
