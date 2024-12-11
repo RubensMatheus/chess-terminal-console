@@ -1,7 +1,7 @@
 package br.com.chess.game.boardgame;
 
 import br.com.chess.game.boardgame.exceptions.BoardException;
-import br.com.chess.game.chess.ChessPiece;
+import br.com.chess.game.boardgame.ChessPiece;
 
 public class Board {
 
@@ -10,14 +10,14 @@ public class Board {
     //@ spec_public
     private int columns;
     //@ spec_public
-    private /*@ nullable */ Piece[][] pieces;
+    private /*@ nullable */ ChessPiece[][] pieces;
 
     //@ public invariant pieces != null;
     //@ public invariant rows > 0 && columns > 0;
     //@ public invariant pieces.length == rows;
     //@ public invariant (\forall int i; 0 <= i && i < rows; pieces[i] != null);
     //@ public invariant (\forall int i; 0 <= i && i < rows; pieces[i].length == columns);
-    //@ public invariant (\forall int i; 0 <= i && i < rows;  (\elemtype(\typeof(pieces[i])) == \type(Piece)));
+    //@ public invariant (\forall int i; 0 <= i && i < rows;  (\elemtype(\typeof(pieces[i])) == \type(ChessPiece)));
 
     /*@ public normal_behavior
       @     requires rows > 0 && columns > 0;
@@ -36,15 +36,15 @@ public class Board {
         }
         this.rows = rows;
         this.columns = columns;
-        pieces = new Piece[rows][];
+        pieces = new ChessPiece[rows][];
 
         /*@ loop_invariant 0 <= i && i <= rows;
-          @ loop_invariant (\forall int k; 0 <= k && k < i; pieces[k] != null && pieces[k].length == columns && \elemtype(\typeof(pieces[k])) == \type(Piece));
+          @ loop_invariant (\forall int k; 0 <= k && k < i; pieces[k] != null && pieces[k].length == columns && \elemtype(\typeof(pieces[k])) == \type(ChessPiece));
           @ loop_invariant (\forall int k; 0 <= k && k < i; (\forall int j; 0 <= j && j < columns; pieces[k][j] == null));
           @ decreasing rows - i;
           @*/
         for (int i = 0; i < rows; i++) {
-            pieces[i] = new Piece[columns];
+            pieces[i] = new ChessPiece[columns];
         }
     }
 
@@ -53,7 +53,7 @@ public class Board {
       @     ensures \result == this.pieces;
       @ pure
       @*/
-    public Piece[][] getPieces() {
+    public ChessPiece[][] getChessPieces() {
         return pieces;
     }
 
@@ -83,7 +83,7 @@ public class Board {
       @     signals_only RuntimeException;
       @     assignable \nothing;
       @*/
-    public /*@ nullable */ Piece piece(int row, int column) {
+    public /*@ nullable */ ChessPiece piece(int row, int column) {
 
         if (!positionExistsBasic(row, column)) {
             //@ assert !(row >= 0 && row < rows && column >= 0 && column < columns);
@@ -104,7 +104,7 @@ public class Board {
       @     signals_only RuntimeException;
       @     assignable \nothing;
       @*/
-    public /*@ nullable */ Piece piece(Position position) {
+    public /*@ nullable */ ChessPiece piece(Position position) {
 
         if (!positionExists(position)) {
             //@ assert position.getRow() < 0 || position.getRow() >= rows || position.getColumn() < 0 || position.getColumn() >= columns;
@@ -127,7 +127,7 @@ public class Board {
       @     signals_only RuntimeException;
       @     assignable \nothing;
       @*/
-    public void placePiece(Piece piece, Position position) {
+    public void placeChessPiece(ChessPiece piece, Position position) {
         if (thereIsAPiece(position)) {
             throw new BoardException("Já existe uma peça na posição " + position);
         }
@@ -153,7 +153,7 @@ public class Board {
       @     signals_only RuntimeException;
       @     assignable \nothing;
       @*/
-    public /*@ nullable */ Piece removePiece(Position position) {
+    public /*@ nullable */ ChessPiece removeChessPiece(Position position) {
         if (!positionExists(position)) {
             throw new BoardException("A posição fora do tabuleiro");
         }
@@ -162,7 +162,7 @@ public class Board {
             return null;
         }
 
-        Piece aux = piece(position);
+        ChessPiece aux = piece(position);
         aux.position = null;
 
         //@ assert pieces[position.getRow()][position.getColumn()] != null;

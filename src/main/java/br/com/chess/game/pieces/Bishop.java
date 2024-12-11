@@ -1,9 +1,8 @@
 package br.com.chess.game.pieces;
 
 import br.com.chess.game.boardgame.Board;
+import br.com.chess.game.boardgame.ChessPiece;
 import br.com.chess.game.boardgame.Position;
-import br.com.chess.game.chess.ChessPiece;
-import br.com.chess.game.chess.exceptions.ChessException;
 import br.com.chess.game.chess.utils.Color;
 
 /*@ skipesc */
@@ -66,10 +65,12 @@ public class Bishop extends ChessPiece {
         return mat;
     }
 
-    /*@ public normal_behavior
+    /*@ also
+      @ public normal_behavior
       @     ensures \result.equals("B");
       @ pure
       @*/
+    @Override
     public String getString(){
         return "B";
     }

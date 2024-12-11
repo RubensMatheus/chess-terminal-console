@@ -1,7 +1,7 @@
 package br.com.chess.game;
 
+import br.com.chess.game.boardgame.ChessPiece;
 import br.com.chess.game.chess.ChessMatch;
-import br.com.chess.game.chess.ChessPiece;
 import br.com.chess.game.chess.ChessPosition;
 import br.com.chess.game.chess.exceptions.ChessException;
 import br.com.chess.game.views.BoardView;
@@ -38,7 +38,7 @@ public class Main {
 
                     boolean[][] possibleMoves = chessMatch.possibleMoves(source);
                     BoardView.clearScreen();
-                    BoardView.printBoard(chessMatch.getPieces(),possibleMoves);
+                    BoardView.printBoard(chessMatch.getChessPieces(),possibleMoves);
                     System.out.println();
                     System.out.print("Posição de destino: ");
                     ChessPosition target  = BoardView.readChessPosition(sc);
@@ -49,7 +49,7 @@ public class Main {
                     if(chessMatch.getPromoted() != null){
                         System.out.println("Digite a letra da peça a ser escolhida: (A/C/T/B)");
                         String type = sc.nextLine();
-                        chessMatch.replacepromotedPiece(type);
+                        chessMatch.replacepromotedChessPiece(type);
                     }
                 }
                 catch (ChessException | InputMismatchException e) {

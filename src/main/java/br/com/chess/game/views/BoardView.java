@@ -1,8 +1,8 @@
 package br.com.chess.game.views;
 
 
+import br.com.chess.game.boardgame.ChessPiece;
 import br.com.chess.game.chess.ChessMatch;
-import br.com.chess.game.chess.ChessPiece;
 import br.com.chess.game.chess.ChessPosition;
 import br.com.chess.game.chess.utils.Color;
 import br.com.chess.game.views.utils.BoardColors;
@@ -28,7 +28,7 @@ public class BoardView {
         }
     }
     public static void printMatch(ChessMatch chessMatch, List<ChessPiece> capturedPieces){
-        printBoard(chessMatch.getPieces());
+        printBoard(chessMatch.getChessPieces());
         System.out.println();
         capturedPieces(capturedPieces);
         System.out.println("Turno: "+ chessMatch.getTurn());
@@ -75,29 +75,41 @@ public class BoardView {
         }
         else {
             if (piece.getColor() == Color.WHITE) {
-                System.out.print(BoardColors.ANSI_WHITE + piece + BoardColors.ANSI_RESET);
+                System.out.print(BoardColors.ANSI_WHITE + piece.getString() + BoardColors.ANSI_RESET);
             }
             else {
-                System.out.print(BoardColors.ANSI_YELLOW + piece + BoardColors.ANSI_RESET);
+                System.out.print(BoardColors.ANSI_YELLOW + piece.getString() + BoardColors.ANSI_RESET);
             }
         }
         System.out.print(" ");
     }
-    private static void capturedPieces(List<ChessPiece> chessPieces){
-        List<ChessPiece> white = chessPieces.stream().filter(x->x
-                .getColor() == Color.WHITE).collect(Collectors.toList());
+    private static void capturedPieces(List<ChessPiece> chessPieces) {
+        List<ChessPiece> white = chessPieces.stream()
+                .filter(x -> x.getColor() == Color.WHITE)
+                .collect(Collectors.toList());
 
-        List<ChessPiece> black = chessPieces.stream().filter(x->x
-                .getColor() == Color.BLACK).collect(Collectors.toList());
+        List<ChessPiece> black = chessPieces.stream()
+                .filter(x -> x.getColor() == Color.BLACK)
+                .collect(Collectors.toList());
+
         System.out.println("Peças capturadas: ");
+
         System.out.print("Peças brancas: ");
         System.out.print(BoardColors.ANSI_WHITE);
-        System.out.println(Arrays.toString(white.toArray()));
+        System.out.println(
+                white.stream()
+                        .map(ChessPiece::getString)
+                        .collect(Collectors.joining(", "))
+        );
         System.out.print(BoardColors.ANSI_RESET);
+
         System.out.print("Peças pretas: ");
         System.out.print(BoardColors.ANSI_YELLOW);
-        System.out.println(Arrays.toString(black.toArray()));
-
-
+        System.out.println(
+                black.stream()
+                        .map(ChessPiece::getString)
+                        .collect(Collectors.joining(", "))
+        );
     }
+
 }

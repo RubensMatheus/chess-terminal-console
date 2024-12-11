@@ -1,9 +1,8 @@
 package br.com.chess.game.pieces;
 
 import br.com.chess.game.boardgame.Board;
+import br.com.chess.game.boardgame.ChessPiece;
 import br.com.chess.game.boardgame.Position;
-import br.com.chess.game.chess.ChessPiece;
-import br.com.chess.game.chess.exceptions.ChessException;
 import br.com.chess.game.chess.utils.Color;
 
 /*@ skipesc */
@@ -15,10 +14,12 @@ public class Rook extends ChessPiece {
         super(board, color);
     }
 
-    /*@ public normal_behavior
-      @     ensures \result.equals("T");
-      @ pure
-      @*/
+     /*@ also
+       @ public normal_behavior
+       @     ensures \result.equals("t");
+       @ pure
+       @*/
+    @Override
     public String getString(){
         return "T";
     }
@@ -33,8 +34,7 @@ public class Rook extends ChessPiece {
         // above
         p.setValues(position.getRow() - 1, position.getColumn());
 
-        /*@ maintaining getBoard().positionExists(p) ==>
-          @     (p.getRow() >= 0 && p.getRow() < getBoard().getRows());
+        /*@ maintaining getBoard().positionExists(p);
           @ maintaining (\forall int r; p.getRow() <= r && r < position.getRow();
           @     mat[r][position.getColumn()] == (getBoard().pieces[r][position.getColumn()] == null));
           @ decreasing p.getRow();
