@@ -59,16 +59,12 @@ public class Knight extends ChessPiece {
 
         /*@ maintaining 0 <= i && i <= directions.length;
           @ maintaining (\forall int x, y;
-          @     0 <= x && x < getBoard().getRows() &&
-          @     0 <= y && y < getBoard().getColumns();
-          @     mat[x][y] == (
-          @         (\exists int k; 0 <= k && k < i &&
-          @             x == position.getRow() + directions[k][0] &&
-          @             y == position.getColumn() + directions[k][1] &&
-          @             getBoard().positionExistsBasic(x, y) &&
-          @             (getBoard().pieces[x][y] == null ||
-          @              (getBoard().pieces[x][y] instanceof ChessPiece &&
-          @               getBoard().pieces[x][y].getColor() != this.getColor())))));
+          @     0 <= x && x < mat.length && 0 <= y && y < mat[x].length;
+          @     mat[x][y] ==> (
+          @         getBoard().positionExistsBasic(x, y) &&
+          @         (getBoard().pieces[x][y] == null ||
+          @         (getBoard().pieces[x][y] instanceof ChessPiece &&
+          @          getBoard().pieces[x][y].getColor() != this.getColor()))));
           @ decreasing directions.length - i;
           @*/
         for (int i = 0; i < directions.length; i++) {

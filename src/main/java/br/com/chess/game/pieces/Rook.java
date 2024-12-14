@@ -35,15 +35,16 @@ public class Rook extends ChessPiece {
                 {0, 1}   // right
         };
 
-        //@ maintaining 0 <= i && i <= directions.length;
-        //@ maintaining (\forall int x, y;
-        //@     0 <= x && x < mat.length && 0 <= y && y < mat[x].length;
-        //@     mat[x][y] ==> (
-        //@         getBoard().positionExistsBasic(x, y) &&
-        //@         (getBoard().pieces[x][y] == null ||
-        //@         (getBoard().pieces[x][y] instanceof ChessPiece &&
-        //@          getBoard().pieces[x][y].getColor() != this.getColor()))));
-        //@ decreasing directions.length - i;
+        /*@ maintaining 0 <= i && i <= directions.length;
+          @ maintaining (\forall int x, y;
+          @     0 <= x && x < mat.length && 0 <= y && y < mat[x].length;
+          @     mat[x][y] ==> (
+          @         getBoard().positionExistsBasic(x, y) &&
+          @         (getBoard().pieces[x][y] == null ||
+          @         (getBoard().pieces[x][y] instanceof ChessPiece &&
+          @          getBoard().pieces[x][y].getColor() != this.getColor()))));
+          @ decreasing directions.length - i;
+          @*/
         for (int i = 0; i < directions.length; i++) {
             int dx = directions[i][0];
             int dy = directions[i][1];
