@@ -96,7 +96,7 @@ public class Board {
 
     /*@ public normal_behavior
       @     requires positionExists(position);
-      @     ensures \result == pieces[position.getRow()][position.getColumn()];
+      @     ensures \result == pieces[position.row][position.column];
       @     assignable \nothing;
       @ also
       @ public exceptional_behavior
@@ -114,13 +114,12 @@ public class Board {
         return pieces[position.getRow()][position.getColumn()];
     }
 
-
     /*@ public normal_behavior
       @     requires positionExists(position);
-      @     requires pieces[position.getRow()][position.getColumn()] == null;
-      @     ensures pieces[position.getRow()][position.getColumn()] == piece;
+      @     requires pieces[position.row][position.column] == null;
+      @     ensures pieces[position.row][position.column] == piece;
       @     ensures piece.modelPosition == position;
-      @     assignable pieces[position.getRow()][position.getColumn()], piece.modelPosition;
+      @     assignable pieces[position.row][position.column], piece.modelPosition;
       @ also
       @ public exceptional_behavior
       @     requires !positionExists(position) || (pieces[position.getRow()][position.getColumn()] != null);
@@ -137,11 +136,12 @@ public class Board {
 
     }
 
+
     /*@ public normal_behavior
-      @     requires positionExists(position) && pieces[position.getRow()][position.getColumn()] != null;
-      @     ensures \result == (\old(pieces[position.getRow()][position.getColumn()]));
-      @     ensures pieces[position.getRow()][position.getColumn()] == null;
-      @     assignable pieces[position.getRow()][position.getColumn()], pieces[position.getRow()][position.getColumn()].modelPosition;
+      @     requires positionExists(position) && pieces[position.row][position.column] != null;
+      @     ensures \result == (\old(pieces[position.row][position.column]));
+      @     ensures pieces[position.row][position.column] == null;
+      @     assignable pieces[position.row][position.column], pieces[position.row][position.column].modelPosition;
       @ also
       @ public normal_behavior
       @     requires positionExists(position) && pieces[position.getRow()][position.getColumn()] == null;
