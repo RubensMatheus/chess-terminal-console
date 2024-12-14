@@ -68,7 +68,7 @@ public class Knight extends ChessPiece {
           @             getBoard().positionExistsBasic(x, y) &&
           @             (getBoard().pieces[x][y] == null ||
           @              (getBoard().pieces[x][y] instanceof ChessPiece &&
-          @               (getBoard().pieces[x][y]).getColor() != this.getColor())))));
+          @               getBoard().pieces[x][y].getColor() != this.getColor())))));
           @ decreasing directions.length - i;
           @*/
         for (int i = 0; i < directions.length; i++) {
@@ -81,15 +81,6 @@ public class Knight extends ChessPiece {
                 mat[p.getRow()][p.getColumn()] = canMove(p);
             }
         }
-
-        //@ assert (\forall int i, j;
-        //@         0 <= i && i < mat.length &&
-        //@         0 <= j && j < mat[i].length;
-        //@         mat[i][j] ==> (
-        //@             getBoard().positionExistsBasic(i, j) &&
-        //@             (getBoard().pieces[i][j] == null ||
-        //@             (getBoard().pieces[i][j] instanceof ChessPiece &&
-        //@               (getBoard().pieces[i][j]).getColor() != this.getColor()))));
 
         return mat;
     }

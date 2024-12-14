@@ -67,8 +67,7 @@ public abstract class ChessPiece {
       @         \result[i][j] ==>
       @             getBoard().positionExistsBasic(i, j) &&
       @             (getBoard().pieces[i][j] == null ||
-      @              (getBoard().pieces[i][j] instanceof ChessPiece &&
-      @               (getBoard().pieces[i][j]).getColor() != this.getColor())));
+      @              (getBoard().pieces[i][j]).getColor() != this.getColor()));
       @ pure
       @*/
     public abstract boolean[][] possibleMoves();
@@ -79,6 +78,7 @@ public abstract class ChessPiece {
       @ requires modelPosition.getColumn() + maxMove <= Integer.MAX_VALUE;
       @ requires position.getRow() >= 0 && position.getRow() < modelBoard.getRows();
       @ requires position.getColumn() >= 0 && position.getColumn() < modelBoard.getColumns();
+      @ pure
       @*/
     public boolean possibleMove(Position position) {
         return possibleMoves()[position.getRow()][position.getColumn()];
