@@ -9,6 +9,11 @@ public class Rook extends ChessPiece {
 
     //@ public represents maxMove = 8;
 
+    /*@ public normal_behavior
+      @     ensures modelColor == color;
+      @     ensures modelBoard == board;
+      @ pure
+      @*/
     public Rook(Board board, Color color) {
         super(board, color);
     }
@@ -26,6 +31,14 @@ public class Rook extends ChessPiece {
     @Override
     public boolean[][] possibleMoves() {
         boolean[][] mat = new boolean[getBoard().getRows()][getBoard().getColumns()];
+
+        if(position == null || !getBoard().positionExists(position)) {
+            return mat;
+        }
+
+        //@ assert position.getColumn() + maxMove <= Integer.MAX_VALUE;
+        //@ assert position.getRow() + maxMove <= Integer.MAX_VALUE;
+
         Position p = new Position(0, 0);
 
         int[][] directions = {

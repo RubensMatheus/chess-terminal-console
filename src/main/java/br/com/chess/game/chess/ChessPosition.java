@@ -53,6 +53,8 @@ public class ChessPosition {
       @     requires column >= 'a' && column <= 'h';
       @     ensures \result.getRow() == (8 - this.row);
       @     ensures \result.getColumn() == (this.column - 'a');
+      @     ensures \result.getRow() >= 0 && \result.getRow() < 8;
+      @     ensures \result.getColumn() >= 0 && \result.getColumn() < 8;
       @ assignable \nothing;
       @*/
     public Position toPosition() {

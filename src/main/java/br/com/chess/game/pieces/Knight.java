@@ -10,6 +10,11 @@ public class Knight extends ChessPiece {
 
     //@ public represents maxMove = 2;
 
+    /*@ public normal_behavior
+      @     ensures modelColor == color;
+      @     ensures modelBoard == board;
+      @ pure
+      @*/
     public Knight(Board board, Color color) {
         super(board, color);
     }
@@ -44,7 +49,15 @@ public class Knight extends ChessPiece {
     public boolean[][] possibleMoves() {
 
         boolean[][] mat = new boolean[getBoard().getRows()][getBoard().getColumns()];
+
+        if(position == null || !getBoard().positionExists(position)) {
+            //@ assert modelPosition == null || !(modelPosition.row >= 0 && modelPosition.row < modelBoard.rows &&
+            //@           modelPosition.column >= 0 && modelPosition.column < modelBoard.columns);
+            return mat;
+        }
+
         Position p = new Position(0, 0);
+
 
         //@ assert (\forall int i, j;
         //@         0 <= i && i < mat.length &&
@@ -61,10 +74,11 @@ public class Knight extends ChessPiece {
           @ maintaining (\forall int x, y;
           @     0 <= x && x < mat.length && 0 <= y && y < mat[x].length;
           @     mat[x][y] ==> (
-          @         getBoard().positionExistsBasic(x, y) &&
-          @         (getBoard().pieces[x][y] == null ||
-          @         (getBoard().pieces[x][y] instanceof ChessPiece &&
-          @          getBoard().pieces[x][y].getColor() != this.getColor()))));
+          @         (0 <= x && x < modelBoard.rows &&
+          @         0 <= y && y < modelBoard.columns) &&
+          @         (modelBoard.pieces[x][y] == null ||
+          @         (modelBoard.pieces[x][y] instanceof ChessPiece &&
+          @          modelBoard.pieces[x][y].modelColor != this.modelColor))));
           @ decreasing directions.length - i;
           @*/
         for (int i = 0; i < directions.length; i++) {
@@ -73,7 +87,6 @@ public class Knight extends ChessPiece {
 
             p.setValues(position.getRow() + dx, position.getColumn() + dy);
             if (getBoard().positionExists(p)) {
-                //@ assert getBoard().positionExists(p);
                 mat[p.getRow()][p.getColumn()] = canMove(p);
             }
         }

@@ -7,6 +7,11 @@ import br.com.chess.game.chess.utils.Color;
 
 public class Queen extends ChessPiece {
 
+    /*@ public normal_behavior
+      @     ensures modelColor == color;
+      @     ensures modelBoard == board;
+      @ pure
+      @*/
     public Queen(Board board, Color color) {
         super(board, color);
     }
@@ -25,6 +30,13 @@ public class Queen extends ChessPiece {
     public boolean[][] possibleMoves() {
 
         boolean[][] mat = new boolean[getBoard().getRows()][getBoard().getColumns()];
+
+        if(position == null || !getBoard().positionExists(position)) {
+            return mat;
+        }
+
+        //@ assert position.getColumn() + maxMove <= Integer.MAX_VALUE;
+        //@ assert position.getRow() + maxMove <= Integer.MAX_VALUE;
 
         Position p = new Position(0, 0);
 
@@ -50,17 +62,19 @@ public class Queen extends ChessPiece {
 
             p.setValues(position.getRow(), position.getColumn());
 
-            /*@ maintaining getBoard().positionExistsBasic(p.getRow(), p.getColumn());
-              @ maintaining 0 <= p.getRow() && p.getRow() < getBoard().getRows();
-              @ maintaining 0 <= p.getColumn() && p.getColumn() < getBoard().getColumns();
+            /*@ maintaining 0 <= p.getRow() && p.getRow() < modelBoard.rows &&
+              @         0 <= p.getColumn() && p.getColumn() < modelBoard.columns;
+              @ maintaining 0 <= p.getRow() && p.getRow() < modelBoard.rows;
+              @ maintaining 0 <= p.getColumn() && p.getColumn() < modelBoard.columns;
               @ maintaining (\forall int x, y;
               @     0 <= x && x < mat.length && 0 <= y && y < mat[x].length;
               @     mat[x][y] ==> (
-              @         getBoard().positionExistsBasic(x, y) &&
-              @         (getBoard().pieces[x][y] == null ||
-              @         (getBoard().pieces[x][y] instanceof ChessPiece &&
-              @          getBoard().pieces[x][y].getColor() != this.getColor()))));
-              @ decreasing dx != 0 ? (dx > 0 ? getBoard().getRows() - p.getRow() : p.getRow()) : (dy > 0 ? getBoard().getColumns() - p.getColumn() : p.getColumn());
+              @         (0 <= x && x < modelBoard.rows &&
+              @         0 <= y && y < modelBoard.columns) &&
+              @         (modelBoard.pieces[x][y] == null ||
+              @         (modelBoard.pieces[x][y] instanceof ChessPiece &&
+              @          modelBoard.pieces[x][y].modelColor != this.modelColor))));
+              @ decreasing dx != 0 ? (dx > 0 ? modelBoard.rows - p.getRow() : p.getRow()) : (dy > 0 ? modelBoard.columns - p.getColumn() : p.getColumn());
               @*/
             while (getBoard().positionExists(new Position(p.getRow() + dx, p.getColumn() + dy))) {
                 p.setValues(p.getRow() + dx, p.getColumn() + dy);
@@ -74,14 +88,6 @@ public class Queen extends ChessPiece {
             }
         }
 
-        //@ assert mat.length == getBoard().getRows();
-        //@ assert (\forall int i; 0 <= i && i < mat.length;
-        //@         mat[i] != null && mat[i].length == getBoard().getColumns());
-        //@ assert (\forall int x, y;
-        //@         0 <= x && x < mat.length && 0 <= y && y < mat[x].length;
-        //@         mat[x][y] ==> (getBoard().positionExistsBasic(x, y) &&
-        //@                        (getBoard().pieces[x][y] == null ||
-        //@                         getBoard().pieces[x][y].getColor() != this.getColor())));
         return mat;
     }
 }
