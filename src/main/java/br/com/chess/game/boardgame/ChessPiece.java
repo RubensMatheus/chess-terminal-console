@@ -1,10 +1,11 @@
 package br.com.chess.game.boardgame;
 import br.com.chess.game.chess.ChessPosition;
 import br.com.chess.game.chess.utils.Color;
+import br.com.chess.game.pieces.Rook;
 
 public abstract class ChessPiece {
 
-    protected /*@ nullable */ Position position; //@ in modelPosition;
+    protected  /*@ nullable */ Position position; //@ in modelPosition;
     private Board board; //@ in modelBoard;
 
     private final Color color; //@ in modelColor;
@@ -54,40 +55,74 @@ public abstract class ChessPiece {
         return position;
     }
 
+
+    /*@ public normal_behavior
+      @     ensures modelPosition == position;
+      @     assignable modelPosition;
+      @*/
+    public void setPosition(/*@ nullable*/ Position position) {
+        this.position = position;
+    }
+
     /*@ requires modelPosition != null;
-      @ requires getBoard().positionExists(modelPosition);
-      @ requires modelPosition.getRow() + maxMove <= Integer.MAX_VALUE;
-      @ requires modelPosition.getColumn() + maxMove <= Integer.MAX_VALUE;
-      @ ensures \result.length == modelBoard.getRows();
+      @ requires modelPosition.row >= 0 && modelPosition.row < modelBoard.rows;
+      @ requires modelPosition.column >= 0 && modelPosition.column < modelBoard.columns;
+      @ requires modelPosition.column + maxMove <= Integer.MAX_VALUE;
+      @ requires modelPosition.row + maxMove <= Integer.MAX_VALUE;
+      @ ensures \result.length == modelBoard.rows;
       @ ensures (\forall int i; 0 <= i && i < \result.length;
-      @             \result[i].length == modelBoard.getColumns());
+      @             \result[i].length == modelBoard.columns);
       @ ensures (\forall int i, j;
-      @         0 <= i && i < getBoard().getRows() &&
-      @         0 <= j && j < getBoard().getColumns();
-      @         \result[i][j] ==>
-      @             getBoard().positionExistsBasic(i, j) &&
-      @             (getBoard().pieces[i][j] == null ||
-      @              (getBoard().pieces[i][j] instanceof ChessPiece &&
-      @               (getBoard().pieces[i][j]).getColor() != this.getColor())));
+      @         0 <= i && i < modelBoard.rows &&
+      @         0 <= j && j < modelBoard.columns;
+      @         \result[i][j] == true ==>
+      @             (i >= 0 && j >=0 && i < modelBoard.rows && j < modelBoard.columns) &&
+      @             (modelBoard.pieces[i][j] == null ||
+      @             (modelBoard.pieces[i][j]).modelColor != this.modelColor ||
+      @             (modelBoard.pieces[i][j] instanceof Rook &&
+      @             (modelBoard.pieces[i][j]).modelColor == this.modelColor &&
+      @              (modelBoard.pieces[i][j]).modelCount == 0)));
+      @ also
+      @ requires modelPosition == null ||
+      @ !(modelPosition.row >= 0 && modelPosition.row < modelBoard.rows && modelPosition.column >= 0 && modelPosition.column < modelBoard.columns);
+      @ ensures \result.length == modelBoard.rows;
+      @ ensures (\forall int i; 0 <= i && i < \result.length;
+      @             \result[i].length == modelBoard.columns);
+      @ ensures (\forall int i, j;
+      @         0 <= i && i < modelBoard.rows &&
+      @         0 <= j && j < modelBoard.columns;
+      @         \result[i][j] == false);
       @ pure
       @*/
     public abstract boolean[][] possibleMoves();
 
     /*@ requires modelPosition != null;
-      @ requires getBoard().positionExists(modelPosition);
-      @ requires modelPosition.getRow() + maxMove <= Integer.MAX_VALUE;
+      @ requires modelPosition.row >= 0 && modelPosition.row < modelBoard.rows;
+      @ requires modelPosition.column >= 0 && modelPosition.column < modelBoard.columns;
+      @ requires position.getRow() >= 0 && position.getRow() < modelBoard.rows;
+      @ requires position.getColumn() >= 0 && position.getColumn() < modelBoard.columns;
       @ requires modelPosition.getColumn() + maxMove <= Integer.MAX_VALUE;
-      @ requires position.getRow() >= 0 && position.getRow() < modelBoard.getRows();
-      @ requires position.getColumn() >= 0 && position.getColumn() < modelBoard.getColumns();
+      @ requires modelPosition.getRow() + maxMove <= Integer.MAX_VALUE;
+      @ also
+      @ requires modelPosition == null ||
+      @ !(modelPosition.row >= 0 && modelPosition.row < modelBoard.rows && modelPosition.column >= 0 && modelPosition.column < modelBoard.columns) ||
+      @ !(position.getRow() >= 0 && position.getRow() < modelBoard.rows && position.getColumn() >= 0 && position.getColumn() < modelBoard.columns);
+      @ ensures \result == false;
+      @ pure
       @*/
     public boolean possibleMove(Position position) {
+        if(this.position == null || !board.positionExists(this.position) || !board.positionExists(position)) {
+            return false;
+        }
+
         return possibleMoves()[position.getRow()][position.getColumn()];
     }
 
-    /*@ requires modelPosition != null;
-      @ requires getBoard().positionExists(modelPosition);
-      @ requires modelPosition.getRow() + maxMove <= Integer.MAX_VALUE;
-      @ requires modelPosition.getColumn() + maxMove <= Integer.MAX_VALUE;
+    /*@ requires (modelPosition != null && modelPosition.row >= 0
+      @ && modelPosition.row < modelBoard.rows &&
+      @ modelPosition.column >= 0 && modelPosition.column < modelBoard.columns) ==>
+      @ (modelPosition.column + maxMove <= Integer.MAX_VALUE &&
+      @ modelPosition.row + maxMove <= Integer.MAX_VALUE);
       @ pure
       @*/
     public boolean isThereAnyPossibleMove() {
@@ -154,14 +189,16 @@ public abstract class ChessPiece {
 
 
     /*@ public normal_behavior
-      @     requires getBoard().positionExists(position);
-      @     requires getBoard().pieces[position.getRow()][position.getColumn()] == null;
+      @     requires position.getRow() >= 0 && position.getColumn() >= 0;
+      @     requires position.getRow() < modelBoard.rows && position.getColumn() < modelBoard.columns;
+      @     requires modelBoard.pieces[position.getRow()][position.getColumn()] == null;
       @     ensures \result == false;
       @ also
       @ public normal_behavior
-      @     requires getBoard().positionExists(position);
-      @     requires getBoard().pieces[position.getRow()][position.getColumn()] != null;
-      @     ensures \result == ((getBoard().pieces[position.getRow()][position.getColumn()]).getColor() != getColor());
+      @     requires position.getRow() >= 0 && position.getColumn() >= 0;
+      @     requires position.getRow() < modelBoard.rows && position.getColumn() < modelBoard.columns;
+      @     requires modelBoard.pieces[position.getRow()][position.getColumn()] != null;
+      @     ensures \result == ((modelBoard.pieces[position.getRow()][position.getColumn()]).modelColor != this.modelColor);
       @ pure
       @*/
     public boolean isThereOpponentPiece(Position position) {
