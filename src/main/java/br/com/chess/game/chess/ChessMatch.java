@@ -1,6 +1,7 @@
 package br.com.chess.game.chess;
 
 import br.com.chess.game.boardgame.*;
+import br.com.chess.game.boardgame.exceptions.BoardException;
 import br.com.chess.game.chess.exceptions.ChessException;
 import br.com.chess.game.chess.utils.Color;
 import br.com.chess.game.pieces.*;
@@ -95,6 +96,9 @@ public class ChessMatch {
       @ ensures !check && !checkMate;
       @ ensures piecesOnTheBoard != null && capturedChessPieces != null;
       @ ensures piecesOnTheBoard.size() > 0;
+      @ ensures  board.pieces.length == board.rows;
+      @ ensures (\forall int x; 0 <= x && x < board.rows; board.pieces[x].length == board.columns);
+      @ ensures (\forall int x; 0 <= x && x < board.rows; (\elemtype(\typeof(board.pieces[x])) == \type(ChessPiece)));
       @*/
     public ChessMatch() {
         board = new Board();
@@ -108,82 +112,115 @@ public class ChessMatch {
         initialSetup();
         //@ assert board.rows > 0 && board.columns > 0;
 
+
     }
 
-//    public /*@ nullable*/ ChessPiece[][] getChessPieces() {
-//        int rows = board.getRows();
-//        int cols = board.getColumns();
-//        /*@ nullable */ ChessPiece[][] mat = new ChessPiece[rows][cols];
-//        for (int i = 0; i < rows; i++) {
-//            for (int j = 0; j < cols; j++) {
-//                /*@ nullable*/ ChessPiece p = board.piece(i, j);
-//                mat[i][j] = p;
-//            }
-//        }
-//        return mat;
-//    }
-
-//    /*@ skipesc */
-//    public ChessPiece performChessMove(ChessPosition sourcePosition, ChessPosition targetPosition) {
-//        Position source = sourcePosition.toPosition();
-//        Position target = targetPosition.toPosition();
-//        validateSourcePosition(source);
-//        validateTargetPosition(source, target);
-//        ChessPiece capturedChessPiece = makeMove(source, target);
-//        if (testCheck(currentPlayer)) {
-//            undoMove(source, target, capturedChessPiece);
-//            throw new ChessException("Você não pode se colocar em check");
-//        }
-//        ChessPiece movedChessPiece = board.piece(target);
-//
-//        //#specialmove promotion
-//        promoted = null;
-//        if(movedChessPiece instanceof Pawn){
-//            if((movedChessPiece.getColor() == Color.WHITE && target.getRow() == 0 )||(movedChessPiece.getColor() == Color.BLACK && target.getRow() == 7 )){
-//                promoted =  board.piece(target);
-//                promoted = replacepromotedChessPiece("A");
-//            }
-//        }
-//
-//        check = (testCheck(opponent(currentPlayer))) ? true : false;
-//
-//        if (testCheckMate(opponent(currentPlayer))) {
-//            checkMate = true;
-//        } else {
-//            nextTurn();
-//        }
-//
-//        // #specialmove en passant
-//        if (movedChessPiece instanceof Pawn && (target.getRow() == source.getRow() - 2 || target.getRow() == source.getRow() + 2)) {
-//            enPassantVulnerable = movedChessPiece;
-//        }
-//        else {
-//            enPassantVulnerable = null;
-//        }
-//
-//        return capturedChessPiece;
-//    }
-
-//    /*@ skipesc */
-//    public ChessPiece replacepromotedChessPiece(String type){
-//        if(promoted == null){
-//            throw new IllegalStateException("Não há peça para ser promovida");
-//        }
-//        if(!type.equals("T") && !type.equals("A") && !type.equals("C") && !type.equals("B")){
-//            throw new InvalidParameterException("Tipo invalido de promoção");
-//        }
-//        Position position = promoted.getChessPosition().toPosition();
-//        ChessPiece p = board.removeChessPiece(position);
-//        piecesOnTheBoard.remove(p);
-//
-//        ChessPiece newChessPiece = newChessPiece(type, promoted.getColor());
-//        board.placeChessPiece(newChessPiece,position);
-//        piecesOnTheBoard.add(newChessPiece);
-//
-//        return newChessPiece;
-//    }
 
     //@ pure
+    public /*@ nullable*/ ChessPiece[][] getChessPieces() {
+        return board.getPieces();
+    }
+
+    /*@ ensures board.pieces.length == board.rows;
+      @ ensures (\forall int i; 0 <= i && i < board.rows; board.pieces[i].length == board.columns);
+      @ ensures (\forall int i; 0 <= i && i < board.rows; (\elemtype(\typeof(board.pieces[i])) == \type(ChessPiece)));
+      @*/
+    public /*@ nullable*/ ChessPiece performChessMove(ChessPosition sourcePosition, ChessPosition targetPosition) {
+        Position source = sourcePosition.toPosition();
+        Position target = targetPosition.toPosition();
+        validateSourcePosition(source);
+        validateTargetPosition(source, target);
+
+       /*@ nullable*/ ChessPiece capturedChessPiece = makeMove(source, target);
+        if (testCheck(currentPlayer)) {
+            undoMove(source, target, capturedChessPiece);
+            throw new ChessException("Você não pode se colocar em check");
+        }
+
+        /*@ nullable */ ChessPiece movedChessPiece = board.piece(target);
+
+        //#specialmove promotion
+        promoted = null;
+        if(movedChessPiece instanceof Pawn){
+            if((movedChessPiece.getColor() == Color.WHITE && target.getRow() == 0 )||(movedChessPiece.getColor() == Color.BLACK && target.getRow() == 7 )){
+                promoted =  board.piece(target);
+                promoted = replacepromotedChessPiece("A");
+            }
+        }
+
+        Color opponent = opponent(currentPlayer);
+
+
+        check = testCheck(opponent);
+
+        if (testCheckMate(opponent(currentPlayer))) {
+            checkMate = true;
+        } else {
+            //@ assume turn < Integer.MAX_VALUE;
+            nextTurn();
+        }
+
+        // #specialmove en passant
+        if (movedChessPiece instanceof Pawn) {
+            //@ assume source.getRow() - 2  > Integer.MIN_VALUE;
+            //@ assume source.getRow() + 2  < Integer.MAX_VALUE;
+                if(target.getRow() == (source.getRow() - 2) || target.getRow() == (source.getRow() + 2))
+                      enPassantVulnerable = movedChessPiece;
+        }
+        else {
+            enPassantVulnerable = null;
+        }
+
+       return capturedChessPiece;
+    }
+
+
+    //@ ensures  board.pieces.length == board.rows;
+    //@ ensures (\forall int x; 0 <= x && x < board.rows; board.pieces[x].length == board.columns);
+    //@ ensures (\forall int x; 0 <= x && x < board.rows; (\elemtype(\typeof(board.pieces[x])) == \type(ChessPiece)));
+    public ChessPiece replacepromotedChessPiece(String type){
+        if(promoted == null){
+            throw new IllegalStateException("Não há peça para ser promovida");
+        }
+        if(!type.equals("T") && !type.equals("A") && !type.equals("C") && !type.equals("B")){
+            throw new InvalidParameterException("Tipo invalido de promoção");
+        }
+
+        //@assert type.equals("T") || type.equals("A") || type.equals("C") || type.equals("B");
+
+        //@ assume promoted.modelPosition != null ==> promoted.modelPosition.getColumn() <= Character.MAX_VALUE - 'a';
+        //@ assume promoted.modelPosition != null ==> (8 - promoted.modelPosition.getRow()) <= Integer.MAX_VALUE;
+        //@ assume promoted.modelPosition != null ==> 'a' + promoted.modelPosition.getColumn() >= 0;
+
+        /*@ nullable*/ ChessPosition chessPosition = promoted.getChessPosition();
+
+        if(chessPosition == null || !board.thereIsAPiece(chessPosition.toPosition())){
+            throw new InvalidParameterException("Não há peça para ser promovida");
+        }
+
+        Position position = chessPosition.toPosition();
+
+        //@ assert position.row < board.getRows();
+        //@ assert position.column < board.getColumns();
+        //@ assert board.pieces[position.row][position.column] != null;
+        ChessPiece p = board.removeChessPiece(position);
+        piecesOnTheBoard.remove(p);
+        ChessPiece newChessPiece = newChessPiece(type, promoted.getColor());
+        board.placeChessPiece(newChessPiece,position);
+        piecesOnTheBoard.add(newChessPiece);
+
+        return newChessPiece;
+    }
+
+    /*@ requires type.equals("B") || type.equals("C") || type.equals("A") || type.equals("T");
+      @ ensures (\result instanceof Bishop) <==> type.equals("B");
+      @ ensures (\result instanceof Knight) <==> type.equals("C");
+      @ ensures (\result instanceof Queen) <==> type.equals("A");
+      @ ensures (\result instanceof Rook) <==> type.equals("T");
+      @ ensures \result.getColor() == color;
+      @ ensures \result.getBoard() == board;
+      @ pure
+      @*/
     private ChessPiece newChessPiece(String type, Color color) {
         if (type.equals("B")) return new Bishop(board, color);
         if (type.equals("C")) return new Knight(board, color);
@@ -193,12 +230,16 @@ public class ChessMatch {
 
 
     /*@ assignable \nothing;
+      @ ensures board.positionExists(position);
+      @ ensures board.pieces[position.row][position.column] != null;
       @ helper
       @*/
     private void validateSourcePosition(Position position) {
         if (!board.thereIsAPiece(position)) {
             throw new ChessException("Não há nenhuma peça na posição de origem.");
         }
+        //@ assert board.positionExists(position);
+        //@ assert board.pieces[position.row][position.column] != null;
 
         ChessPiece piece = board.piece(position);
         //@ assert piece != null;
@@ -213,13 +254,13 @@ public class ChessMatch {
         if (!piece.isThereAnyPossibleMove()) {
             throw new ChessException("Não há movimentos possíveis para a peça escolhida");
         }
+
     }
 
     //@ assignable \nothing;
     public boolean[][] possibleMoves(ChessPosition sourcePosition) {
         Position position = sourcePosition.toPosition();
         validateSourcePosition(position);
-        //@ assume board.pieces[position.row][position.column] != null;
         ChessPiece piece = board.piece(position);
         //@ assume (piece.modelPosition != null && piece.modelPosition.row >= 0 && piece.modelPosition.row < piece.modelBoard.rows &&
         //@ piece.modelPosition.column >= 0 && piece.modelPosition.column < piece.modelBoard.columns) ==> (piece.modelPosition.getRow() + piece.maxMove <= Integer.MAX_VALUE
@@ -227,104 +268,158 @@ public class ChessMatch {
         return piece.possibleMoves();
     }
 
-//    /*@ skipesc */
-//    private ChessPiece makeMove(Position source, Position target) {
-//        ChessPiece p = board.removeChessPiece(source);
-//        p.increaseMoveCount();
-//        ChessPiece capturedChessPiece = board.removeChessPiece(target);
-//        board.placeChessPiece(p, target);
-//        if (capturedChessPiece != null) {
-//            piecesOnTheBoard.remove(capturedChessPiece);
-//            capturedChessPieces.add(capturedChessPiece);
-//        }
-//
-//        //#Special move castling king side rook
-//        if(p instanceof King && target.getColumn() == source.getColumn() + 2){
-//            Position sourceT = new Position(source.getRow(), source.getColumn() + 3);
-//            Position targetT = new Position(source.getRow(), source.getColumn() + 1);
-//            ChessPiece rook =board.removeChessPiece(sourceT);
-//            board.placeChessPiece(rook,targetT);
-//            rook.increaseMoveCount();
-//        }
-//        //#Special move castling king side rook
-//        else if(p instanceof King && target.getColumn() == source.getColumn() - 2){
-//            Position sourceT = new Position(source.getRow(), source.getColumn() - 4);
-//            Position targetT = new Position(source.getRow(), source.getColumn() - 1);
-//            ChessPiece rook =  board.removeChessPiece(sourceT);
-//            board.placeChessPiece(rook,targetT);
-//            rook.increaseMoveCount();
-//        }
-//        // #specialmove en passant
-//        if (p instanceof Pawn) {
-//            if (source.getColumn() != target.getColumn() && capturedChessPiece == null) {
-//                Position pawnPosition;
-//                if (p.getColor() == Color.WHITE) {
-//                    pawnPosition = new Position(target.getRow() + 1, target.getColumn());
-//                }
-//                else {
-//                    pawnPosition = new Position(target.getRow() - 1, target.getColumn());
-//                }
-//                capturedChessPiece = board.removeChessPiece(pawnPosition);
-//                capturedChessPieces.add(capturedChessPiece);
-//                piecesOnTheBoard.remove(capturedChessPiece);
-//            }
-//        }
-//
-//        return capturedChessPiece;
-//    }
 
-//    /*@ skipesc */
-//    private void undoMove(Position source, Position target, ChessPiece captured) {
-//        ChessPiece p = board.removeChessPiece(target);
-//        p.decreaseMoveCount();
-//        board.placeChessPiece(p, source);
+    /*@ ensures board.pieces.length == board.rows;
+      @ ensures (\forall int i; 0 <= i && i < board.rows; board.pieces[i].length == board.columns);
+      @ ensures (\forall int i; 0 <= i && i < board.rows; (\elemtype(\typeof(board.pieces[i])) == \type(ChessPiece)));
+      @*/
+    private /*@ nullable*/ ChessPiece makeMove(Position source, Position target) {
+
+        /*@ nullable*/ ChessPiece p = board.removeChessPiece(source);
+
+        if (p == null) {
+            throw new ChessException("Não há nenhuma peça na posição de origem.");
+        }
 //
-//        if (captured != null) {
-//            board.placeChessPiece(captured, target);
-//            capturedChessPieces.remove(captured);
-//            piecesOnTheBoard.add(captured);
-//        }
-//        //#Special move castling king side rook
-//        if(p instanceof King && target.getColumn() == source.getColumn() + 2){
-//            Position sourceT = new Position(source.getRow(), source.getColumn() + 3);
-//            Position targetT = new Position(source.getRow(), source.getColumn() + 1);
-//            ChessPiece rook = board.removeChessPiece(targetT);
-//            board.placeChessPiece(rook,sourceT);
-//            rook.decreaseMoveCount();
-//        }
-//        //#Special move castling king side rook
-//        else if(p instanceof King && target.getColumn() == source.getColumn() - 2){
-//            Position sourceT = new Position(source.getRow(), source.getColumn() - 4);
-//            Position targetT = new Position(source.getRow(), source.getColumn() - 1);
-//            ChessPiece rook = board.removeChessPiece(targetT);
-//            board.placeChessPiece(rook,sourceT);
-//            rook.decreaseMoveCount();
-//        }
-//
-//        // #specialmove en passant
-//        if (p instanceof Pawn) {
-//            if (source.getColumn() != target.getColumn() && captured == enPassantVulnerable) {
-//                ChessPiece pawn = board.removeChessPiece(target);
-//                Position pawnPosition;
-//                if (p.getColor() == Color.WHITE) {
-//                    pawnPosition = new Position(3, target.getColumn());
-//                }
-//                else {
-//                    pawnPosition = new Position(4, target.getColumn());
-//                }
-//                board.placeChessPiece(pawn, pawnPosition);
-//            }
-//        }
-//    }
+        //@ assume p.modelCount < Integer.MAX_VALUE;
+        p.increaseMoveCount();
+        /*@ nullable*/ ChessPiece capturedChessPiece = board.removeChessPiece(target);
+        board.placeChessPiece(p, target);
+
+        if (capturedChessPiece != null) {
+            piecesOnTheBoard.remove(capturedChessPiece);
+            capturedChessPieces.add(capturedChessPiece);
+        }
+
+        //#Special move castling king side rook
+        if(p instanceof King && target.getColumn() == (source.getColumn() + 2)){
+            Position sourceT = new Position(source.getRow(), source.getColumn() + 3);
+            Position targetT = new Position(source.getRow(), source.getColumn() + 1);
+
+            //@ assert sourceT.column > targetT.column;
+            //@ assert sourceT.row == sourceT.row;
+            //@ assert sourceT.column < board.columns ==> targetT.column < board.columns;
+            /*@ nullable*/ ChessPiece rook = board.removeChessPiece(sourceT);
+            if(rook != null) {
+                board.placeChessPiece(rook,targetT);
+                //@ assume rook.modelCount < Integer.MAX_VALUE;
+                rook.increaseMoveCount();
+            }
+
+        }
+        //#Special move castling king side rook
+        else if(p instanceof King && target.getColumn() == source.getColumn() - 2){
+            Position sourceT = new Position(source.getRow(), source.getColumn() - 4);
+            Position targetT = new Position(source.getRow(), source.getColumn() - 1);
+            //@ assert sourceT.column < targetT.column;
+            //@ assert sourceT.row == sourceT.row;
+            //@ assert sourceT.column >= 0 ==> targetT.column >=0;
+                /*@ nullable*/ ChessPiece rook =  board.removeChessPiece(sourceT);
+                if(rook != null) {
+                    board.placeChessPiece(rook, targetT);
+                    //@ assume rook.modelCount < Integer.MAX_VALUE;
+                    rook.increaseMoveCount();
+                }
+        }
+        // #specialmove en passant
+        if (p instanceof Pawn) {
+            if (source.getColumn() != target.getColumn() && capturedChessPiece == null) {
+                Position pawnPosition;
+                if (p.getColor() == Color.WHITE) {
+                    pawnPosition = new Position(target.getRow() + 1, target.getColumn());
+                }
+                else {
+                    pawnPosition = new Position(target.getRow() - 1, target.getColumn());
+                }
+                    capturedChessPiece = board.removeChessPiece(pawnPosition);
+                    if(capturedChessPiece != null) {
+                        capturedChessPieces.add(capturedChessPiece);
+                        piecesOnTheBoard.remove(capturedChessPiece);
+                    }
+            }
+        }
+
+        return capturedChessPiece;
+    }
+
+    /*@ ensures board.pieces.length == board.rows;
+      @ ensures (\forall int i; 0 <= i && i < board.rows; board.pieces[i].length == board.columns);
+      @ ensures (\forall int i; 0 <= i && i < board.rows; (\elemtype(\typeof(board.pieces[i])) == \type(ChessPiece)));
+      @*/
+    private void undoMove(Position source, Position target, /*@ nullable*/ ChessPiece captured) {
+        /*@ nullable*/ ChessPiece p = board.removeChessPiece(target);
+
+        if(p == null) {
+            throw new ChessException("Não há nenhuma peça na posição de destino.");
+        }
+        //@ assume p.modelCount > Integer.MIN_VALUE;
+        p.decreaseMoveCount();
+        board.placeChessPiece(p, source);
+
+        if (captured != null) {
+            board.placeChessPiece(captured, target);
+            capturedChessPieces.remove(captured);
+            piecesOnTheBoard.add(captured);
+        }
+        //#Special move castling king side rook
+        if(p instanceof King && target.getColumn() == source.getColumn() + 2){
+            Position sourceT = new Position(source.getRow(), source.getColumn() + 3);
+            Position targetT = new Position(source.getRow(), source.getColumn() + 1);
+            //@ assert sourceT.column > targetT.column;
+            //@ assert sourceT.row == sourceT.row;
+            //@ assert sourceT.column < board.columns ==> targetT.column < board.columns;
+                /*@ nullable*/ ChessPiece rook = board.removeChessPiece(targetT);
+                if(rook != null) {
+                    board.placeChessPiece(rook,sourceT);
+                    //@ assume rook.modelCount > Integer.MIN_VALUE;
+                    rook.decreaseMoveCount();
+                }
+        }
+        //#Special move castling king side rook
+        else if(p instanceof King && target.getColumn() == source.getColumn() - 2){
+            Position sourceT = new Position(source.getRow(), source.getColumn() - 4);
+            Position targetT = new Position(source.getRow(), source.getColumn() - 1);
+            //@ assert sourceT.column < targetT.column;
+            //@ assert sourceT.row == sourceT.row;
+            //@ assert sourceT.column >= 0 ==> targetT.column >=0;
+                /*@ nullable*/ ChessPiece rook = board.removeChessPiece(targetT);
+                if(rook != null) {
+                    board.placeChessPiece(rook,sourceT);
+                    //@ assume rook.modelCount > Integer.MIN_VALUE;
+                    rook.decreaseMoveCount();
+                }
+        }
+
+        // #specialmove en passant
+        if (p instanceof Pawn) {
+            if (source.getColumn() != target.getColumn() && captured == enPassantVulnerable) {
+                /*@ nullable*/ ChessPiece pawn = board.removeChessPiece(target);
+                Position pawnPosition;
+                if (p.getColor() == Color.WHITE) {
+                    pawnPosition = new Position(3, target.getColumn());
+                    //@ assert pawnPosition.row < board.rows && pawnPosition.column < board.columns;
+                }
+                else {
+                    pawnPosition = new Position(4, target.getColumn());
+                    //@ assert pawnPosition.row < board.rows && pawnPosition.column < board.columns;
+                }
+                if(pawn != null) {
+                    board.placeChessPiece(pawn, pawnPosition);
+                }
+            }
+        }
+    }
 
 
+    //@ requires board.positionExists(source);
+    //@ requires board.pieces[source.row][source.column] != null;
     //@ assignable \nothing;
     private void validateTargetPosition(Position source, Position target) {
 
-        /*@ nullable*/ ChessPiece sourcePiece = board.piece(source);
+        ChessPiece sourcePiece = board.piece(source);
 
-        if(sourcePiece == null || sourcePiece.getPosition() == null) {
-            throw new InvalidParameterException("Peças nas posições inválidas!");
+        if(sourcePiece.getPosition() == null) {
+            throw new ChessException("Peça de origem inválida");
         }
 
         //@ assume sourcePiece.modelPosition.getColumn() + sourcePiece.maxMove <= Integer.MAX_VALUE;
@@ -336,7 +431,7 @@ public class ChessMatch {
 
     /*@ requires turn < Integer.MAX_VALUE;
       @ ensures turn == \old(turn) + 1;
-      @ assigns turn, currentPlayer;
+      @ assignable turn, currentPlayer;
       @*/
     private void nextTurn() {
         turn++;
@@ -349,9 +444,16 @@ public class ChessMatch {
       @ requires board.rows == 8 && board.columns == 8;
       @ ensures board.pieces[8 - row][column - 'a'] == piece;
       @ ensures piecesOnTheBoard.contains(piece);
-      @ assignable board.pieces[8 - row][column - 'a'],
-      @            piecesOnTheBoard.*,
-      @            piece.modelPosition;
+      @ ensures  board.pieces.length == board.rows;
+      @ ensures (\forall int x; 0 <= x && x < board.rows; board.pieces[x].length == board.columns);
+      @ ensures (\forall int x; 0 <= x && x < board.rows; (\elemtype(\typeof(board.pieces[x])) == \type(ChessPiece)));
+      @ ensures turn == \old(turn);
+      @ ensures currentPlayer == \old(currentPlayer);
+      @ ensures check == \old(check);
+      @ ensures board.rows == \old(board.rows);
+      @ ensures board.columns == \old(board.columns);
+      @ ensures checkMate == \old(checkMate);
+      @ ensures capturedChessPieces == \old(capturedChessPieces);
       @*/
     private void placeNewChessPiece(char column, int row, ChessPiece piece) {
         ChessPosition chessPosition = new ChessPosition(column, row);
@@ -359,6 +461,7 @@ public class ChessMatch {
         //@ assert position.getRow() >= 0 && position.getRow() < board.getRows();
         //@ assert position.getColumn() >= 0 && position.getColumn() < board.getColumns();
         board.placeChessPiece(piece, position);
+        //@ assert piece.modelPosition != null;
         piecesOnTheBoard.add(piece);
     }
 
@@ -437,32 +540,52 @@ public class ChessMatch {
         return false;
     }
 
-//    /*@ skipesc */
-//    private boolean testCheckMate(Color color) {
-//        if (!testCheck(color)) {
-//            return false;
-//        }
-//        List<ChessPiece> list = listColorChessPieces(color);
-//        for (ChessPiece p : list) {
-//            boolean[][] mat = p.possibleMoves();
-//            for (int i = 0; i < board.getRows(); i++) {
-//                for (int j = 0; j < board.getColumns(); j++) {
-//                    if (mat[i][j]) {
-//                        Position source = p.getChessPosition().toPosition();
-//                        Position target = new Position(i, j);
-//                        ChessPiece capturedChessPiece = makeMove(source, target);
-//                        boolean testCheck = testCheck(color);
-//                        undoMove(source, target, capturedChessPiece);
-//                        if (!testCheck) {
-//                            return false;
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        return true;
-//
-//    }
+    //@ ensures  board.pieces.length == board.rows;
+    //@ ensures (\forall int x; 0 <= x && x < board.rows; board.pieces[x].length == board.columns);
+    //@ ensures (\forall int x; 0 <= x && x < board.rows; (\elemtype(\typeof(board.pieces[x])) == \type(ChessPiece)));
+    private boolean testCheckMate(Color color) {
+        if (!testCheck(color)) {
+            return false;
+        }
+        List<ChessPiece> list = listColorChessPieces(color);
+        for (ChessPiece p : list) {
+            //@ assume (p.modelPosition != null && p.modelPosition.row >= 0 && p.modelPosition.row < p.modelBoard.rows &&
+            //@ p.modelPosition.column >= 0 && p.modelPosition.column < p.modelBoard.columns) ==> (p.modelPosition.getRow() + p.maxMove <= Integer.MAX_VALUE
+            //@ && p.modelPosition.getColumn() + p.maxMove <= Integer.MAX_VALUE);
+            boolean[][] mat = p.possibleMoves();
+            /*@ maintaining 0 <= i && i <= mat.length;
+              @ decreasing mat.length - i;
+              @*/
+            for (int i = 0; i < mat.length; i++) {
+                /*@ maintaining 0 <= j && j <= mat[i].length;
+                  @ decreasing mat[i].length - j;
+                  @*/
+
+                for (int j = 0; j < mat[i].length; j++) {
+                    if (mat[i][j]) {
+                        //@ assume p.modelPosition != null;
+                        //@ assume p.modelPosition.getRow() >= 0 && p.modelPosition.getRow() <= 7;
+                        //@ assume p.modelPosition.getColumn() >= 0 && p.modelPosition.getColumn() <= 7;
+                        //@ assume p.modelPosition.getColumn() <= Character.MAX_VALUE - 'a';
+                        //@ assume 8 - p.modelPosition.getRow() <= Integer.MAX_VALUE;
+                        ChessPosition chessPosition = p.getChessPosition();
+                        Position source = chessPosition.toPosition();
+                        Position target = new Position(i, j);
+                        /*@ nullable*/ ChessPiece capturedChessPiece = makeMove(source, target);
+
+                        boolean testCheck = testCheck(color);
+                        undoMove(source, target, capturedChessPiece);
+                        if (!testCheck) {
+                            return false;
+                        }
+                    }
+
+                }
+            }
+        }
+        return true;
+
+    }
 
 
     /*@ requires board != null;
