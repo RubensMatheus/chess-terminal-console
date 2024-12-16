@@ -9,24 +9,26 @@ import br.com.chess.game.views.utils.BoardColors;
 
 import java.util.*;
 import java.util.stream.Collectors;
-/*@ skipesc */
+
 public class BoardView {
 
-//    public static void clearScreen(){
-//        System.out.print("\033[H\033[2J");
-//        System.out.flush();
-//    }
-//
-//    public static ChessPosition readChessPosition(Scanner sc){
-//        try {
-//            String s = sc.nextLine();
-//            char column = s.charAt(0);
-//            int row = Integer.parseInt(s.substring(1));
-//            return new ChessPosition(column, row);
-//        }catch (RuntimeException e){
-//            throw new InputMismatchException("Erro ao ler a posição no tabuleiro. Valores validos entre a1 até h8");
-//        }
-//    }
+    //@ assignable System.out.outputText, System.out.eol;
+    public static void clearScreen(){
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
+
+    public static ChessPosition readChessPosition(Scanner sc){
+        try {
+            String s = sc.nextLine();
+            char column = s.charAt(0);
+            int row = Integer.parseInt(s.substring(1));
+            return new ChessPosition(column, row);
+        }catch (RuntimeException e){
+            throw new InputMismatchException("Erro ao ler a posição no tabuleiro. Valores validos entre a1 até h8");
+        }
+    }
+
 //    public static void printMatch(ChessMatch chessMatch, List<ChessPiece> capturedPieces){
 //        printBoard(chessMatch.getChessPieces());
 //        System.out.println();

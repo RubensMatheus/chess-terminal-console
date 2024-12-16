@@ -6,9 +6,9 @@ import br.com.chess.game.boardgame.ChessPiece;
 public class Board {
 
     //@ spec_public
-    private int rows;
+    private final int rows;
     //@ spec_public
-    private int columns;
+    private final int columns;
     //@ spec_public
     private /*@ nullable */ ChessPiece[][] pieces;
 
@@ -66,15 +66,23 @@ public class Board {
     }
 
     /*@ public normal_behavior
-      @     requires positionExistsBasic(row, column);
-      @     ensures \result == pieces[row][column];
-      @     assignable \nothing;
-      @ also
-      @ public exceptional_behavior
-      @     requires !positionExistsBasic(row, column);
-      @     signals_only RuntimeException;
-      @     assignable \nothing;
+      @     ensures \result == this.pieces;
+      @ pure
       @*/
+    public /*@ nullable*/ ChessPiece[][] getPieces() {
+        return pieces;
+    }
+
+    /*@ public normal_behavior
+          @     requires positionExistsBasic(row, column);
+          @     ensures \result == pieces[row][column];
+          @     assignable \nothing;
+          @ also
+          @ public exceptional_behavior
+          @     requires !positionExistsBasic(row, column);
+          @     signals_only RuntimeException;
+          @     assignable \nothing;
+          @*/
     public /*@ nullable */ ChessPiece piece(int row, int column) {
 
         if (!positionExistsBasic(row, column)) {
@@ -108,9 +116,16 @@ public class Board {
     /*@ public normal_behavior
       @     requires positionExists(position);
       @     requires pieces[position.row][position.column] == null;
+      @     ensures position.row == \old(position.row);
+      @     ensures position.column == \old(position.column);
+      @     ensures (\forall int i; 0 <= i && i < rows;
+      @                 \forall int j; 0 <= j < columns;
+      @                     (i != position.row && j != position.column) ==> pieces[i][j] == \old(pieces[i][j]));
+      @     ensures rows == \old(rows);
+      @     ensures columns == \old(columns);
+      @     ensures pieces == \old(pieces);
       @     ensures pieces[position.row][position.column] == piece;
       @     ensures piece.modelPosition == position;
-      @     assignable pieces[position.row][position.column], piece.modelPosition;
       @ also
       @ public exceptional_behavior
       @     requires !positionExists(position) || (pieces[position.row][position.column] != null);
@@ -129,28 +144,47 @@ public class Board {
 
 
     /*@ public normal_behavior
-      @     requires positionExists(position);
+      @     requires position.row >= 0;
+      @     requires position.column >= 0;
+      @     requires position.row < rows;
+      @     requires position.column < columns;
       @     requires pieces[position.row][position.column] != null;
+      @     ensures position.row == \old(position.row);
+      @     ensures position.column == \old(position.column);
       @     ensures \result == (\old(pieces[position.row][position.column]));
       @     ensures pieces[position.row][position.column] == null;
-      @     assignable pieces[position.row][position.column], pieces[position.row][position.column].modelPosition;
+      @     ensures (\forall int i; 0 <= i && i < rows;
+      @                 \forall int j; 0 <= j < columns;
+      @                     (i != position.row && j != position.column) ==> pieces[i][j] == \old(pieces[i][j]));
+      @     ensures rows == \old(rows);
+      @     ensures columns == \old(columns);
+      @     ensures pieces == \old(pieces);
       @ also
       @ public normal_behavior
-      @     requires positionExists(position);
+      @     requires position.row >= 0;
+      @     requires position.column >= 0;
+      @     requires position.row < rows;
+      @     requires position.column < columns;
       @     requires pieces[position.row][position.column] == null;
+      @     ensures position.row == \old(position.row);
+      @     ensures position.column == \old(position.column);
       @     ensures \result == null;
       @     assignable \nothing;
       @ also
-      @ public exceptional_behavior
-      @     requires !positionExists(position);
-      @     signals_only RuntimeException;
+      @ public normal_behavior
+      @     requires !(position.row >= 0 && position.column >= 0 && position.row < rows && position.column < columns);
+      @     ensures position.row == \old(position.row);
+      @     ensures position.column == \old(position.column);
+      @     ensures \result == null;
       @     assignable \nothing;
       @*/
     public /*@ nullable */ ChessPiece removeChessPiece(Position position) {
         if (!positionExists(position)) {
-            throw new BoardException("A posição fora do tabuleiro");
+            return null;
         }
 
+        //@ assert position.row >= 0 && position.row < rows;
+        //@ assert position.column >= 0 && position.column < columns;
         if (piece(position) == null) {
             return null;
         }
@@ -160,6 +194,9 @@ public class Board {
 
         //@ assert pieces[position.getRow()][position.getColumn()] != null;
         pieces[position.getRow()][position.getColumn()] = null;
+
+        //@ show position.row, position.column;
+        //
         return aux;
     }
 
