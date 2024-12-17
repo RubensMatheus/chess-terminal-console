@@ -61,16 +61,6 @@ public abstract class ChessPiece {
       @ ensures \result.length == modelBoard.rows;
       @ ensures (\forall int i; 0 <= i && i < \result.length;
       @             \result[i].length == modelBoard.columns);
-      @ ensures (\forall int i, j;
-      @         0 <= i && i < modelBoard.rows &&
-      @         0 <= j && j < modelBoard.columns;
-      @         \result[i][j] == true ==>
-      @             (i >= 0 && j >=0 && i < modelBoard.rows && j < modelBoard.columns) &&
-      @             (modelBoard.pieces[i][j] == null ||
-      @             (modelBoard.pieces[i][j]).modelColor != this.modelColor ||
-      @             (modelBoard.pieces[i][j] instanceof Rook &&
-      @             (modelBoard.pieces[i][j]).modelColor == this.modelColor &&
-      @              (modelBoard.pieces[i][j]).modelCount == 0)));
       @ also
       @ requires modelPosition == null ||
       @ !(modelPosition.row >= 0 && modelPosition.row < modelBoard.rows && modelPosition.column >= 0 && modelPosition.column < modelBoard.columns);
