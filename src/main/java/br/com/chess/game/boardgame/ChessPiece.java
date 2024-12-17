@@ -58,18 +58,18 @@ public abstract class ChessPiece {
     /*@ requires modelPosition != null;
       @ requires modelPosition.row >= 0 && modelPosition.row < modelBoard.rows;
       @ requires modelPosition.column >= 0 && modelPosition.column < modelBoard.columns;
-      @ ensures \result.length == modelBoard.rows;
+      @ ensures \result.length == 8;
       @ ensures (\forall int i; 0 <= i && i < \result.length;
-      @             \result[i].length == modelBoard.columns);
+      @             \result[i].length == 8);
       @ also
       @ requires modelPosition == null ||
       @ !(modelPosition.row >= 0 && modelPosition.row < modelBoard.rows && modelPosition.column >= 0 && modelPosition.column < modelBoard.columns);
-      @ ensures \result.length == modelBoard.rows;
+      @ ensures \result.length == 8;
       @ ensures (\forall int i; 0 <= i && i < \result.length;
-      @             \result[i].length == modelBoard.columns);
+      @             \result[i].length == 8);
       @ ensures (\forall int i, j;
-      @         0 <= i && i < modelBoard.rows &&
-      @         0 <= j && j < modelBoard.columns;
+      @         0 <= i && i < 8 &&
+      @         0 <= j && j < 8;
       @         \result[i][j] == false);
       @ pure
       @*/
