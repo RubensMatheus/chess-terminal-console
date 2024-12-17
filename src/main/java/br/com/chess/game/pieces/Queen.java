@@ -7,6 +7,8 @@ import br.com.chess.game.chess.utils.Color;
 
 public class Queen extends ChessPiece {
 
+    //@ public represents maxMove = 7;
+
     /*@ public normal_behavior
       @     ensures modelColor == color;
       @     ensures modelBoard == board;

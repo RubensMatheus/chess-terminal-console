@@ -55,20 +55,9 @@ public abstract class ChessPiece {
         return position;
     }
 
-
-    /*@ public normal_behavior
-      @     ensures modelPosition == position;
-      @     assignable modelPosition;
-      @*/
-    public void setPosition(/*@ nullable*/ Position position) {
-        this.position = position;
-    }
-
     /*@ requires modelPosition != null;
       @ requires modelPosition.row >= 0 && modelPosition.row < modelBoard.rows;
       @ requires modelPosition.column >= 0 && modelPosition.column < modelBoard.columns;
-      @ requires modelPosition.column + maxMove <= Integer.MAX_VALUE;
-      @ requires modelPosition.row + maxMove <= Integer.MAX_VALUE;
       @ ensures \result.length == modelBoard.rows;
       @ ensures (\forall int i; 0 <= i && i < \result.length;
       @             \result[i].length == modelBoard.columns);
@@ -91,8 +80,6 @@ public abstract class ChessPiece {
       @ requires modelPosition.column >= 0 && modelPosition.column < modelBoard.columns;
       @ requires position.getRow() >= 0 && position.getRow() < modelBoard.rows;
       @ requires position.getColumn() >= 0 && position.getColumn() < modelBoard.columns;
-      @ requires modelPosition.getColumn() + maxMove <= Integer.MAX_VALUE;
-      @ requires modelPosition.getRow() + maxMove <= Integer.MAX_VALUE;
       @ also
       @ requires modelPosition == null ||
       @ !(modelPosition.row >= 0 && modelPosition.row < modelBoard.rows && modelPosition.column >= 0 && modelPosition.column < modelBoard.columns) ||
@@ -108,11 +95,12 @@ public abstract class ChessPiece {
         return possibleMoves()[position.getRow()][position.getColumn()];
     }
 
-    /*@ requires (modelPosition != null && modelPosition.row >= 0
-      @ && modelPosition.row < modelBoard.rows &&
-      @ modelPosition.column >= 0 && modelPosition.column < modelBoard.columns) ==>
-      @ (modelPosition.column + maxMove <= Integer.MAX_VALUE &&
-      @ modelPosition.row + maxMove <= Integer.MAX_VALUE);
+    /*@ requires modelPosition != null;
+      @ requires modelPosition.row >= 0 && modelPosition.row < modelBoard.rows;
+      @ requires modelPosition.column >= 0 && modelPosition.column < modelBoard.columns;
+      @ also
+      @ requires modelPosition == null ||
+      @ !(modelPosition.row >= 0 && modelPosition.row < modelBoard.rows && modelPosition.column >= 0 && modelPosition.column < modelBoard.columns);
       @ pure
       @*/
     public boolean isThereAnyPossibleMove() {
@@ -203,25 +191,15 @@ public abstract class ChessPiece {
       @     requires modelPosition != null;
       @     requires modelPosition.getRow() >= 0 && modelPosition.getRow() <= 7;
       @     requires modelPosition.getColumn() >= 0 && modelPosition.getColumn() <= 7;
-      @     requires modelPosition.getColumn() <= Character.MAX_VALUE - 'a';
-      @     requires 8 - modelPosition.getRow() <= Integer.MAX_VALUE;
       @     ensures \result != null;
       @     ensures \result.getRow() == 8 - modelPosition.getRow();
       @     ensures \result.getColumn() == (char) ('a' + modelPosition.getColumn());
       @     assignable \nothing;
       @ also
       @ public normal_behavior
-      @     requires modelPosition == null;
+      @     requires modelPosition == null || (modelPosition.getRow() < 0 || modelPosition.getRow() > 7
+      @           || modelPosition.getColumn() < 0 || modelPosition.getColumn() > 7);
       @     ensures \result == null;
-      @     assignable \nothing;
-      @ also
-      @ public exceptional_behavior
-      @     requires modelPosition != null;
-      @     requires modelPosition.getRow() < 0 || modelPosition.getRow() > 7 || modelPosition.getColumn() < 0 || modelPosition.getColumn() > 7;
-      @     requires modelPosition.getColumn() <= Character.MAX_VALUE - 'a';
-      @     requires 'a' + modelPosition.getColumn() >= 0;
-      @     requires 8 - modelPosition.getRow() <= Integer.MAX_VALUE;
-      @     signals_only RuntimeException;
       @     assignable \nothing;
       @*/
     public /*@ nullable*/ ChessPosition getChessPosition(){

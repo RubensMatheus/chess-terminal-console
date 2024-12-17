@@ -19,6 +19,7 @@ public class Board {
     //@ public invariant (\forall int i; 0 <= i && i < rows; pieces[i].length == columns);
     //@ public invariant (\forall int i; 0 <= i && i < rows;  (\elemtype(\typeof(pieces[i])) == \type(ChessPiece)));
 
+
     /*@ public normal_behavior
       @     ensures this.columns == 8;
       @     ensures this.rows == 8;
@@ -139,7 +140,7 @@ public class Board {
 
         pieces[position.getRow()][position.getColumn()] = piece;
         piece.position = position;
-
+        //@ assert piece.modelPosition.row < 8 && piece.modelPosition.column < 8;
     }
 
 
@@ -195,8 +196,6 @@ public class Board {
         //@ assert pieces[position.getRow()][position.getColumn()] != null;
         pieces[position.getRow()][position.getColumn()] = null;
 
-        //@ show position.row, position.column;
-        //
         return aux;
     }
 

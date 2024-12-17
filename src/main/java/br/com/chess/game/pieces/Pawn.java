@@ -33,7 +33,7 @@ public class Pawn extends ChessPiece {
         if (position == null || !getBoard().positionExists(position)) {
             return mat;
         }
-
+      
         Position p = new Position(0, 0);
 
         // Define direções com base na cor da peça
@@ -110,7 +110,6 @@ public class Pawn extends ChessPiece {
                 }
             }
         }
-
         return mat;
     }
 
