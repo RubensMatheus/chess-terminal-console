@@ -56,6 +56,9 @@ public class Knight extends ChessPiece {
             return mat;
         }
 
+        //@ assert position.getColumn() + maxMove <= Integer.MAX_VALUE;
+        //@ assert position.getRow() + maxMove <= Integer.MAX_VALUE;
+
         Position p = new Position(0, 0);
 
 

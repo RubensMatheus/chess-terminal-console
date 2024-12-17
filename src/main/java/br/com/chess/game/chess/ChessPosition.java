@@ -65,29 +65,23 @@ public class ChessPosition {
       @     requires position != null;
       @     requires position.getRow() >= 0 && position.getRow() <= 7;
       @     requires position.getColumn() >= 0 && position.getColumn() <= 7;
-      @     requires position.getColumn() <= Character.MAX_VALUE - 'a';
-      @     requires 8 - position.getRow() <= Integer.MAX_VALUE;
       @     ensures \result != null;
       @     ensures \result.getRow() == 8 - position.getRow();
       @     ensures \result.getColumn() == (char) ('a' + position.getColumn());
       @     assignable \nothing;
       @ also
       @ public normal_behavior
-      @     requires position == null;
+      @     requires position == null || (position.getRow() < 0 || position.getRow() > 7
+      @           || position.getColumn() < 0 || position.getColumn() > 7);
       @     ensures \result == null;
-      @     assignable \nothing;
-      @ also
-      @ public exceptional_behavior
-      @     requires position != null;
-      @     requires position.getRow() < 0 || position.getRow() > 7 || position.getColumn() < 0 || position.getColumn() > 7;
-      @     requires 'a' + position.getColumn() >= 0;
-      @     requires position.getColumn() <= Character.MAX_VALUE - 'a';
-      @     requires 8 - position.getRow() <= Integer.MAX_VALUE;
-      @     signals_only RuntimeException;
       @     assignable \nothing;
       @*/
     public static /*@ nullable*/ ChessPosition fromPosition(/*@ nullable */Position position) {
         if(position == null) {
+            return null;
+        }
+
+        if(position.getRow() < 0 || position.getRow() > 7 || position.getColumn() < 0 || position.getColumn() > 7) {
             return null;
         }
 

@@ -112,7 +112,6 @@ public class ChessMatch {
         initialSetup();
         //@ assert board.rows > 0 && board.columns > 0;
 
-
     }
 
 
@@ -150,9 +149,8 @@ public class ChessMatch {
 
         Color opponent = opponent(currentPlayer);
 
-
         check = testCheck(opponent);
-
+        //@ assert source.getRow() < 8 && source.getRow() >=0;
         if (testCheckMate(opponent(currentPlayer))) {
             checkMate = true;
         } else {
@@ -160,12 +158,11 @@ public class ChessMatch {
             nextTurn();
         }
 
+
         // #specialmove en passant
         if (movedChessPiece instanceof Pawn) {
-            //@ assume source.getRow() - 2  > Integer.MIN_VALUE;
-            //@ assume source.getRow() + 2  < Integer.MAX_VALUE;
-                if(target.getRow() == (source.getRow() - 2) || target.getRow() == (source.getRow() + 2))
-                      enPassantVulnerable = movedChessPiece;
+            if(board.positionExists(source) && (target.getRow() == (source.getRow() - 2) || target.getRow() == (source.getRow() + 2)))
+                enPassantVulnerable = movedChessPiece;
         }
         else {
             enPassantVulnerable = null;
@@ -187,10 +184,6 @@ public class ChessMatch {
         }
 
         //@assert type.equals("T") || type.equals("A") || type.equals("C") || type.equals("B");
-
-        //@ assume promoted.modelPosition != null ==> promoted.modelPosition.getColumn() <= Character.MAX_VALUE - 'a';
-        //@ assume promoted.modelPosition != null ==> (8 - promoted.modelPosition.getRow()) <= Integer.MAX_VALUE;
-        //@ assume promoted.modelPosition != null ==> 'a' + promoted.modelPosition.getColumn() >= 0;
 
         /*@ nullable*/ ChessPosition chessPosition = promoted.getChessPosition();
 
@@ -248,9 +241,6 @@ public class ChessMatch {
             throw new ChessException("A peça escolhida não é sua.");
         }
 
-        //@ assume (piece.modelPosition != null && piece.modelPosition.row >= 0 && piece.modelPosition.row < piece.modelBoard.rows &&
-        //@ piece.modelPosition.column >= 0 && piece.modelPosition.column < piece.modelBoard.columns) ==> (piece.modelPosition.getRow() + piece.maxMove <= Integer.MAX_VALUE
-        //@ && piece.modelPosition.getColumn() + piece.maxMove <= Integer.MAX_VALUE);
         if (!piece.isThereAnyPossibleMove()) {
             throw new ChessException("Não há movimentos possíveis para a peça escolhida");
         }
@@ -262,9 +252,6 @@ public class ChessMatch {
         Position position = sourcePosition.toPosition();
         validateSourcePosition(position);
         ChessPiece piece = board.piece(position);
-        //@ assume (piece.modelPosition != null && piece.modelPosition.row >= 0 && piece.modelPosition.row < piece.modelBoard.rows &&
-        //@ piece.modelPosition.column >= 0 && piece.modelPosition.column < piece.modelBoard.columns) ==> (piece.modelPosition.getRow() + piece.maxMove <= Integer.MAX_VALUE
-        //@ && piece.modelPosition.getColumn() + piece.maxMove <= Integer.MAX_VALUE);
         return piece.possibleMoves();
     }
 
@@ -280,7 +267,6 @@ public class ChessMatch {
         if (p == null) {
             throw new ChessException("Não há nenhuma peça na posição de origem.");
         }
-//
         //@ assume p.modelCount < Integer.MAX_VALUE;
         p.increaseMoveCount();
         /*@ nullable*/ ChessPiece capturedChessPiece = board.removeChessPiece(target);
@@ -422,8 +408,6 @@ public class ChessMatch {
             throw new ChessException("Peça de origem inválida");
         }
 
-        //@ assume sourcePiece.modelPosition.getColumn() + sourcePiece.maxMove <= Integer.MAX_VALUE;
-        //@ assume sourcePiece.modelPosition.getRow() + sourcePiece.maxMove <= Integer.MAX_VALUE;
         if (!sourcePiece.possibleMove(target)) {
             throw new ChessException("A peça escolhida não pode se mover para a posição escolhida");
         }
@@ -438,8 +422,7 @@ public class ChessMatch {
         currentPlayer = (currentPlayer == Color.WHITE) ? Color.BLACK : Color.WHITE;
     }
 
-    /*@ requires board != null;
-      @ requires column >= 'a' && column <= 'h';
+    /*@ requires column >= 'a' && column <= 'h';
       @ requires row >= 1 && row <= 8;
       @ requires board.rows == 8 && board.columns == 8;
       @ ensures board.pieces[8 - row][column - 'a'] == piece;
@@ -514,10 +497,6 @@ public class ChessMatch {
     private boolean testCheck(Color color) {
         ChessPiece king = king(color);
 
-        //@ assume king.modelPosition != null ==> king.modelPosition.getColumn() <= Character.MAX_VALUE - 'a';
-        //@ assume king.modelPosition != null ==> (8 - king.modelPosition.getRow()) <= Integer.MAX_VALUE;
-        //@ assume king.modelPosition != null ==> 'a' + king.modelPosition.getColumn() >= 0;
-
         /*@ nullable*/ ChessPosition ckingPosition = king.getChessPosition();
 
         if(ckingPosition == null) {
@@ -529,8 +508,7 @@ public class ChessMatch {
         List<ChessPiece> opponentChessPieces = listColorChessPieces(opponent(color));
 
         for (ChessPiece p : opponentChessPieces) {
-            //@ assume (p.modelPosition != null && p.modelPosition.row >= 0 && p.modelPosition.row < p.modelBoard.rows &&
-            //@ p.modelPosition.column >= 0 && p.modelPosition.column < p.modelBoard.columns) ==> (p.modelPosition.getRow() + p.maxMove <= Integer.MAX_VALUE && p.modelPosition.getColumn() + p.maxMove <= Integer.MAX_VALUE);
+
             boolean[][] mat = p.possibleMoves();
             //@ assert p.getBoard().rows == 8 && p.getBoard().columns == 8;
             if (mat[kingPosition.getRow()][kingPosition.getColumn()]) {
@@ -543,15 +521,13 @@ public class ChessMatch {
     //@ ensures  board.pieces.length == board.rows;
     //@ ensures (\forall int x; 0 <= x && x < board.rows; board.pieces[x].length == board.columns);
     //@ ensures (\forall int x; 0 <= x && x < board.rows; (\elemtype(\typeof(board.pieces[x])) == \type(ChessPiece)));
+    //@ ensures (\forall int x; 0 <= x && x < board.rows; (\elemtype(\typeof(board.pieces[x])) == \type(ChessPiece)));
     private boolean testCheckMate(Color color) {
         if (!testCheck(color)) {
             return false;
         }
         List<ChessPiece> list = listColorChessPieces(color);
         for (ChessPiece p : list) {
-            //@ assume (p.modelPosition != null && p.modelPosition.row >= 0 && p.modelPosition.row < p.modelBoard.rows &&
-            //@ p.modelPosition.column >= 0 && p.modelPosition.column < p.modelBoard.columns) ==> (p.modelPosition.getRow() + p.maxMove <= Integer.MAX_VALUE
-            //@ && p.modelPosition.getColumn() + p.maxMove <= Integer.MAX_VALUE);
             boolean[][] mat = p.possibleMoves();
             /*@ maintaining 0 <= i && i <= mat.length;
               @ decreasing mat.length - i;
@@ -563,20 +539,18 @@ public class ChessMatch {
 
                 for (int j = 0; j < mat[i].length; j++) {
                     if (mat[i][j]) {
-                        //@ assume p.modelPosition != null;
-                        //@ assume p.modelPosition.getRow() >= 0 && p.modelPosition.getRow() <= 7;
-                        //@ assume p.modelPosition.getColumn() >= 0 && p.modelPosition.getColumn() <= 7;
-                        //@ assume p.modelPosition.getColumn() <= Character.MAX_VALUE - 'a';
-                        //@ assume 8 - p.modelPosition.getRow() <= Integer.MAX_VALUE;
-                        ChessPosition chessPosition = p.getChessPosition();
-                        Position source = chessPosition.toPosition();
-                        Position target = new Position(i, j);
-                        /*@ nullable*/ ChessPiece capturedChessPiece = makeMove(source, target);
 
-                        boolean testCheck = testCheck(color);
-                        undoMove(source, target, capturedChessPiece);
-                        if (!testCheck) {
-                            return false;
+                        /*@ nullable*/ ChessPosition chessPosition = p.getChessPosition();
+                        if(chessPosition != null) {
+                            Position source = chessPosition.toPosition();
+                            Position target = new Position(i, j);
+                            /*@ nullable*/ ChessPiece capturedChessPiece = makeMove(source, target);
+
+                            boolean testCheck = testCheck(color);
+                            undoMove(source, target, capturedChessPiece);
+                            if (!testCheck) {
+                                return false;
+                            }
                         }
                     }
 
@@ -637,5 +611,6 @@ public class ChessMatch {
         placeNewChessPiece('f', 7, new Pawn(board, Color.BLACK,this));
         placeNewChessPiece('g', 7, new Pawn(board, Color.BLACK,this));
         placeNewChessPiece('h', 7, new Pawn(board, Color.BLACK,this));
+
     }
 }

@@ -7,7 +7,7 @@ import br.com.chess.game.chess.utils.Color;
 
 public class Rook extends ChessPiece {
 
-    //@ public represents maxMove = 8;
+    //@ public represents maxMove = 7;
 
     /*@ public normal_behavior
       @     ensures modelColor == color;
