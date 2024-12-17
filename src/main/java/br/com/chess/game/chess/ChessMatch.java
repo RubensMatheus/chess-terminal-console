@@ -115,6 +115,8 @@ public class ChessMatch {
     }
 
 
+    //@ ensures \result.length == 8;
+    //@ ensures (\forall int x; 0 <= x && x < \result.length; \result[x].length == 8);
     //@ pure
     public /*@ nullable*/ ChessPiece[][] getChessPieces() {
         return board.getPieces();
@@ -150,7 +152,6 @@ public class ChessMatch {
         Color opponent = opponent(currentPlayer);
 
         check = testCheck(opponent);
-        //@ assert source.getRow() < 8 && source.getRow() >=0;
         if (testCheckMate(opponent(currentPlayer))) {
             checkMate = true;
         } else {
@@ -247,6 +248,9 @@ public class ChessMatch {
 
     }
 
+    //@ ensures \result.length == 8;
+    //@ ensures (\forall int i; 0 <= i && i < \result.length;
+    //@             \result[i].length == 8);
     //@ assignable \nothing;
     public boolean[][] possibleMoves(ChessPosition sourcePosition) {
         Position position = sourcePosition.toPosition();
