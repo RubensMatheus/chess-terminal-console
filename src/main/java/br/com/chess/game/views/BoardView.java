@@ -19,7 +19,6 @@ public class BoardView {
     }
 
     /*@ assignable \nothing;
-      @ helper
       @*/
     public static ChessPosition readChessPosition(Scanner sc) throws InputMismatchException {
         try {
@@ -32,8 +31,7 @@ public class BoardView {
         }
     }
 
-    /*@ assignable System.out.outputText, System.out.eol;
-     @*/
+    //@ assignable System.out.outputText, System.out.eol;
     public static void printMatch(ChessMatch chessMatch, List<ChessPiece> capturedPieces){
         printBoard(chessMatch.getChessPieces());
         System.out.println();
