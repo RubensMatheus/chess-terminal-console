@@ -35,6 +35,7 @@ public class Main {
                         //@ assert captureChessPieces.size() >= 0;
                         BoardView.printMatch(chessMatch, captureChessPieces);
                     }
+                    print01();
                     ChessPosition source = BoardView.readChessPosition(sc);
                     boolean[][] possibleMoves = chessMatch.possibleMoves(source);
                     BoardView.clearScreen();
