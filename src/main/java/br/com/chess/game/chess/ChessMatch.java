@@ -96,9 +96,10 @@ public class ChessMatch {
       @ ensures !check && !checkMate;
       @ ensures piecesOnTheBoard != null && capturedChessPieces != null;
       @ ensures piecesOnTheBoard.size() > 0;
-      @ ensures  board.pieces.length == board.rows;
+      @ ensures board.pieces.length == board.rows;
       @ ensures (\forall int x; 0 <= x && x < board.rows; board.pieces[x].length == board.columns);
-      @ ensures (\forall int x; 0 <= x && x < board.rows; (\elemtype(\typeof(board.pieces[x])) == \type(ChessPiece)));
+      @ ensures (\forall int x; 0 <= x && x < board.rows;
+      @         (\elemtype(\typeof(board.pieces[x])) == \type(ChessPiece)));
       @*/
     public ChessMatch() {
         board = new Board();
@@ -262,7 +263,8 @@ public class ChessMatch {
 
     /*@ ensures board.pieces.length == board.rows;
       @ ensures (\forall int i; 0 <= i && i < board.rows; board.pieces[i].length == board.columns);
-      @ ensures (\forall int i; 0 <= i && i < board.rows; (\elemtype(\typeof(board.pieces[i])) == \type(ChessPiece)));
+      @ ensures (\forall int i; 0 <= i && i < board.rows;
+      @     (\elemtype(\typeof(board.pieces[i])) == \type(ChessPiece)));
       @*/
     private /*@ nullable*/ ChessPiece makeMove(Position source, Position target) {
 
@@ -432,8 +434,10 @@ public class ChessMatch {
       @ ensures board.pieces[8 - row][column - 'a'] == piece;
       @ ensures piecesOnTheBoard.contains(piece);
       @ ensures  board.pieces.length == board.rows;
-      @ ensures (\forall int x; 0 <= x && x < board.rows; board.pieces[x].length == board.columns);
-      @ ensures (\forall int x; 0 <= x && x < board.rows; (\elemtype(\typeof(board.pieces[x])) == \type(ChessPiece)));
+      @ ensures (\forall int x; 0 <= x && x < board.rows;
+      @             board.pieces[x].length == board.columns);
+      @ ensures (\forall int x; 0 <= x && x < board.rows;
+      @             (\elemtype(\typeof(board.pieces[x])) == \type(ChessPiece)));
       @ ensures turn == \old(turn);
       @ ensures currentPlayer == \old(currentPlayer);
       @ ensures check == \old(check);
@@ -617,4 +621,6 @@ public class ChessMatch {
         placeNewChessPiece('h', 7, new Pawn(board, Color.BLACK,this));
 
     }
+
+
 }

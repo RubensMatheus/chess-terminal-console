@@ -51,8 +51,6 @@ public class Knight extends ChessPiece {
         boolean[][] mat = new boolean[getBoard().getRows()][getBoard().getColumns()];
 
         if(position == null || !getBoard().positionExists(position)) {
-            //@ assert modelPosition == null || !(modelPosition.row >= 0 && modelPosition.row < modelBoard.rows &&
-            //@           modelPosition.column >= 0 && modelPosition.column < modelBoard.columns);
             return mat;
         }
 

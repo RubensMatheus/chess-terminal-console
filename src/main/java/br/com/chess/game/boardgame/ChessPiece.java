@@ -63,7 +63,9 @@ public abstract class ChessPiece {
       @             \result[i].length == 8);
       @ also
       @ requires modelPosition == null ||
-      @ !(modelPosition.row >= 0 && modelPosition.row < modelBoard.rows && modelPosition.column >= 0 && modelPosition.column < modelBoard.columns);
+      @ !(modelPosition.row >= 0 && modelPosition.row < modelBoard.rows
+      @   && modelPosition.column >= 0
+      @   && modelPosition.column < modelBoard.columns);
       @ ensures \result.length == 8;
       @ ensures (\forall int i; 0 <= i && i < \result.length;
       @             \result[i].length == 8);
