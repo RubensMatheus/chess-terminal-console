@@ -156,7 +156,8 @@ public class Board {
       @     ensures pieces[position.row][position.column] == null;
       @     ensures (\forall int i; 0 <= i && i < rows;
       @                 \forall int j; 0 <= j < columns;
-      @                     (i != position.row && j != position.column) ==> pieces[i][j] == \old(pieces[i][j]));
+      @                     (i != position.row && j != position.column) ==>
+                                pieces[i][j] == \old(pieces[i][j]));
       @     ensures rows == \old(rows);
       @     ensures columns == \old(columns);
       @     ensures pieces == \old(pieces);
@@ -173,7 +174,8 @@ public class Board {
       @     assignable \nothing;
       @ also
       @ public normal_behavior
-      @     requires !(position.row >= 0 && position.column >= 0 && position.row < rows && position.column < columns);
+      @     requires !(position.row >= 0 && position.column >= 0 && position.row < rows &&
+      @                position.column < columns);
       @     ensures position.row == \old(position.row);
       @     ensures position.column == \old(position.column);
       @     ensures \result == null;

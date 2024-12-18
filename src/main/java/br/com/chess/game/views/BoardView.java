@@ -119,42 +119,52 @@ public class BoardView {
     /*@ assignable System.out.outputText, System.out.eol;
       @*/
     private static void capturedPieces(List<ChessPiece> chessPieces) {
-            List<ChessPiece> white = new ArrayList<>();
-            List<ChessPiece> black = new ArrayList<>();
+        List<ChessPiece> white = new ArrayList<>();
+        List<ChessPiece> black = new ArrayList<>();
 
-            // Filtrar as peças em listas separadas
-            for (ChessPiece piece : chessPieces) {
-                if (piece.getColor() == Color.WHITE) {
-                    white.add(piece);
-                } else if (piece.getColor() == Color.BLACK) {
-                    black.add(piece);
-                }
+        /*@ maintaining 0 <= \count && \count <= chessPieces.size();
+          @ maintaining white.size() + black.size() == \count;
+          @ decreases chessPieces.size() - \count;
+          @*/
+        for (ChessPiece piece : chessPieces) {
+            if (piece.getColor() == Color.WHITE) {
+                white.add(piece);
+            } else if (piece.getColor() == Color.BLACK) {
+                black.add(piece);
             }
-
-            System.out.println("Peças capturadas: ");
-
-            // Peças Brancas
-            System.out.print("Peças brancas: ");
-            System.out.print("\u001B[37m");
-            for (int i = 0; i < white.size(); i++) {
-                System.out.print(white.get(i).getString());
-                if (i < white.size() - 1) {
-                    System.out.print(", ");
-                }
-            }
-            System.out.println("\u001B[0m");
-
-            // Peças Pretas
-            System.out.print("Peças pretas: ");
-            System.out.print("\u001B[33m");
-            for (int i = 0; i < black.size(); i++) {
-                System.out.print(black.get(i).getString());
-                if (i < black.size() - 1) {
-                    System.out.print(", ");
-                }
-            }
-            System.out.println("\u001B[0m");
         }
+
+        System.out.println("Peças capturadas: ");
+
+        // Peças Brancas
+        System.out.print("Peças brancas: ");
+        System.out.print("\u001B[37m");
+
+        /*@ maintaining 0 <= i && i <= white.size();
+          @ decreases white.size() - i;
+          @*/
+        for (int i = 0; i < white.size(); i++) {
+            System.out.print(white.get(i).getString());
+            if (i < white.size() - 1) {
+                System.out.print(", ");
+            }
+        }
+        System.out.println("\u001B[0m");
+
+        // Peças Pretas
+        System.out.print("Peças pretas: ");
+        System.out.print("\u001B[33m");
+        /*@ maintaining 0 <= i && i <= black.size();
+          @ decreases black.size() - i;
+          @*/
+        for (int i = 0; i < black.size(); i++) {
+            System.out.print(black.get(i).getString());
+            if (i < black.size() - 1) {
+                System.out.print(", ");
+            }
+        }
+        System.out.println("\u001B[0m");
+    }
 
 }
 
